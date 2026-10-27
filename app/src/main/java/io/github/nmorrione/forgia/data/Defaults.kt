@@ -1,15 +1,21 @@
 package io.github.nmorrione.forgia.data
 
+import java.time.LocalDate
+
 /**
  * Il programma "Massa pulita – 8 settimane" (Diario_8W_Claude.html) come dati di partenza.
  * Tutto è modificabile dall'app; "Ripristina la scheda di default" torna qui.
  */
 object Defaults {
 
-    fun appData(): AppData = AppData(
-        program = program(),
+    /** La data del diario HTML: solo con questa i testi sulle feste di Natale sono giusti. */
+    val ORIGINAL_START: LocalDate = LocalDate.of(2026, 11, 23)
+
+    /** Al primo avvio [start] è oggi: il programma è subito pronto. */
+    fun appData(start: LocalDate): AppData = AppData(
+        program = program(start),
         nutrition = nutrition(),
-        guide = guide(),
+        guide = guide(start),
     )
 
     fun intervalPresets() = listOf(
@@ -30,9 +36,9 @@ object Defaults {
     private const val DB = "il manubrio successivo (circa +1–2 kg per lato)"
     private const val CHAIN = "+1,25–2,5 kg di zavorra sulla catena"
 
-    fun program() = Program(
+    fun program(start: LocalDate) = Program(
         name = "Massa pulita",
-        startDate = "2026-11-23",
+        startDate = start.toString(),
         weeks = 8,
         weeklyTemplate = listOf("pk", "ua", "rest", "pk", "ub", "lg", "rest"),
         blocks = listOf("Blocco 1", "Blocco 2"),
@@ -41,7 +47,10 @@ object Defaults {
             WeekPhase(0, "2", note = "Inizia la doppia progressione."),
             WeekPhase(0, "2", note = "Aggiungi carico dove hai chiuso il range."),
             WeekPhase(0, "1", note = "La settimana più dura del blocco."),
-            WeekPhase(0, "4", deload = true, note = "Metà serie, carichi −10%, RIR 4. Coincide con Natale."),
+            WeekPhase(
+                0, "4", deload = true,
+                note = "Metà serie, carichi −10%, RIR 4." + if (start == ORIGINAL_START) " Coincide con Natale." else "",
+            ),
             WeekPhase(1, "2", note = "Meno ripetizioni, più carico, una serie in più sui fondamentali."),
             WeekPhase(1, "1–2", note = "Spingi i carichi."),
             WeekPhase(1, "1", note = "Chiudi con i record della scheda."),
@@ -390,7 +399,7 @@ object Defaults {
 
     /* ---------- Guida ---------- */
 
-    fun guide() = listOf(
+    fun guide(start: LocalDate) = listOf(
         TextSection(
             "Misurare",
             """
@@ -435,14 +444,25 @@ object Defaults {
             - Se devi spostare una seduta, l’unica regola fissa è: mai gambe il giorno prima del parkour. Dalla vista Oggi puoi cambiare la sessione di un giorno.
             """.trimIndent(),
         ),
-        TextSection(
-            "Le feste",
-            """
-            - La settimana 5 (21–27 dicembre) è di scarico e cade a Natale: se salti una seduta non succede niente.
-            - Il 25 dicembre e il 1° gennaio sono venerdì, giorno di Upper B: sposta la seduta o saltala.
-            - Pranzi e cenoni: goditeli, tieni alte le proteine negli altri pasti e non compensare digiunando il giorno dopo.
-            - Dopo una cena abbondante il peso può salire di 1–2 kg in un giorno: è acqua e sale. Guarda la media della settimana dopo.
-            """.trimIndent(),
-        ),
+        if (start == ORIGINAL_START) {
+            TextSection(
+                "Le feste",
+                """
+                - La settimana 5 (21–27 dicembre) è di scarico e cade a Natale: se salti una seduta non succede niente.
+                - Il 25 dicembre e il 1° gennaio sono venerdì, giorno di Upper B: sposta la seduta o saltala.
+                - Pranzi e cenoni: goditeli, tieni alte le proteine negli altri pasti e non compensare digiunando il giorno dopo.
+                - Dopo una cena abbondante il peso può salire di 1–2 kg in un giorno: è acqua e sale. Guarda la media della settimana dopo.
+                """.trimIndent(),
+            )
+        } else {
+            TextSection(
+                "Feste e pasti fuori",
+                """
+                - Se una festa cade nella settimana di scarico, saltare una seduta non cambia niente.
+                - Pranzi e cenoni: goditeli, tieni alte le proteine negli altri pasti e non compensare digiunando il giorno dopo.
+                - Dopo una cena abbondante il peso può salire di 1–2 kg in un giorno: è acqua e sale. Guarda la media della settimana dopo.
+                """.trimIndent(),
+            )
+        },
     )
 }

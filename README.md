@@ -20,6 +20,8 @@ Tutto è modificabile dall'app, e i valori derivati si ricalcolano da soli.
 
 **Programma** (in alto a destra): data di inizio, durata, settimana tipo, sessioni ed esercizi, blocchi, fasi, regola di scarico e abitudini.
 
+Al primo avvio il programma parte da quel giorno; la data si cambia da **Programma**. Se la sposti in avanti, i giorni che mancano all'inizio sono la **preparazione**: si segnano come gli altri, con i carichi della prima settimana. Il calendario mostra quanti allenamenti hai fatto e il peso di partenza (media delle ultime pesate prima dell'inizio).
+
 Il diario è legato alle date del calendario, non al programma: se sposti l'inizio o ricominci un nuovo ciclo, carichi e pesi restano. Lo storico «ultima volta» continua anche tra un programma e l'altro.
 
 ## Compilare

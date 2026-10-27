@@ -2,6 +2,7 @@ package io.github.nmorrione.forgia.data
 
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.time.LocalDate
 
 /** Salva tutto in un unico file JSON nella memoria privata dell'app. */
 class Store(private val file: File) {
@@ -31,7 +32,8 @@ class Store(private val file: File) {
     }
 
     fun load(): AppData {
-        if (!file.exists()) return Defaults.appData()
+        // Primo avvio: il programma parte oggi.
+        if (!file.exists()) return Defaults.appData(LocalDate.now())
         return try {
             val text = file.readText()
             val raw = json.decodeFromString(AppData.serializer(), text)
@@ -43,7 +45,7 @@ class Store(private val file: File) {
         } catch (e: Exception) {
             // Non sovrascrivere un file illeggibile: lo mettiamo da parte e ripartiamo dai default.
             file.renameTo(File(file.parentFile, "${file.name}.corrotto-${System.currentTimeMillis()}"))
-            Defaults.appData()
+            Defaults.appData(LocalDate.now())
         }
     }
 

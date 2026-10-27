@@ -1,4 +1,4 @@
-package io.github.nmorrione.forgia
+﻿package io.github.nmorrione.forgia
 
 import io.github.nmorrione.forgia.data.AppData
 import io.github.nmorrione.forgia.data.DayLog
@@ -18,7 +18,7 @@ import java.time.LocalDate
 import kotlin.math.abs
 
 class LogicTest {
-    private val data = Defaults.appData()
+    private val data = Defaults.appData(Defaults.ORIGINAL_START)
     private val s = Schedule(data.program)
 
     @Test fun scheduleMatchesHtml() {

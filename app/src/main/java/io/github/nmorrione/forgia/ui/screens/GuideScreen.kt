@@ -100,12 +100,19 @@ fun GuideScreen(vm: AppViewModel) {
             ) {
                 if (!armDefaults) armDefaults = true
                 else {
-                    vm.update { Defaults.appData().copy(log = it.log) }
+                    vm.update {
+                        // Resta la data di inizio scelta; diario e timer non si toccano.
+                        val start = runCatching { LocalDate.parse(it.program.startDate) }.getOrElse { LocalDate.now() }
+                        Defaults.appData(start).copy(log = it.log, timer = it.timer)
+                    }
                     armDefaults = false
                     message = "Programma, alimentazione e testi tornati quelli di partenza."
                 }
             }
-            Muted("Il ripristino riporta programma, alimentazione e testi a quelli iniziali; il diario (pesi, carichi, note) resta.", Modifier.padding(top = 8.dp), Tiny)
+            Muted(
+                "Il ripristino riporta programma, alimentazione e testi a quelli iniziali e tiene la data di inizio; diario (pesi, carichi, note) e timer restano.",
+                Modifier.padding(top = 8.dp), Tiny,
+            )
         }
         val version = remember { runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "" }
         Note("Forgia $version")

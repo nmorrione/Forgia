@@ -41,15 +41,32 @@ class Schedule(val program: Program) {
     fun weekOf(i: Int): Int = Math.floorDiv(i, 7)
     fun clampDay(i: Int): Int = i.coerceIn(0, days - 1)
 
+    /**
+     * Prima dell'inizio (settimane negative) vale la prima settimana: è la preparazione,
+     * in cui si provano i carichi del primo blocco.
+     */
     fun phase(week: Int): WeekPhase =
-        program.weekPlan.getOrNull(week) ?: program.weekPlan.lastOrNull() ?: WeekPhase()
+        program.weekPlan.getOrNull(week.coerceAtLeast(0)) ?: program.weekPlan.lastOrNull() ?: WeekPhase()
 
     fun blockName(b: Int): String = program.blocks.getOrNull(b) ?: "Blocco ${b + 1}"
 
-    /** "Blocco 1 (RIR 3)" o "Settimana di scarico". */
+    /** "Blocco 1 (RIR 3)", "Settimana di scarico" o, prima dell'inizio, "Preparazione (RIR 3)". */
     fun phaseLabel(week: Int): String {
         val ph = phase(week)
-        return if (ph.deload) "Settimana di scarico" else "${blockName(ph.block)} (RIR ${ph.rir})"
+        return when {
+            week < 0 -> "Preparazione (RIR ${ph.rir})"
+            ph.deload -> "Settimana di scarico"
+            else -> "${blockName(ph.block)} (RIR ${ph.rir})"
+        }
+    }
+
+    /**
+     * Il primo giorno raggiungibile nella vista Oggi: oggi o il primo giorno segnato,
+     * se vengono prima dell'inizio, fino a 120 giorni prima.
+     */
+    fun firstDay(today: LocalDate, log: TrainingLog): Int {
+        val firstLogged = log.days.keys.minOrNull()?.let { runCatching { indexOf(LocalDate.parse(it)) }.getOrNull() }
+        return listOfNotNull(0, indexOf(today), firstLogged).min().coerceAtLeast(-120)
     }
 
     /** "Blocco 1, RIR 3" o "Scarico". */

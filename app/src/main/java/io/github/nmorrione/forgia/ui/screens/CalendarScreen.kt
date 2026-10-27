@@ -86,6 +86,39 @@ fun CalendarScreen(vm: AppViewModel) {
     val delta = if (firstW >= 0 && lastW > firstW) avgs[lastW]!! - avgs[firstW]!! else null
 
     ScreenColumn {
+        // Preparazione: quello che hai segnato prima dell'inizio
+        val prep = t.prepSummary()
+        if (prep != null || todayIdx < 0) {
+            CardBox(Modifier.padding(top = 12.dp)) {
+                Text("Preparazione", style = cond(20))
+                Text(
+                    if (todayIdx < 0) "Il programma parte ${It.dayTitle(s.start)}: mancano ${-todayIdx} giorni."
+                    else "Prima dell’inizio, dal ${It.shortDate(s.dateAt(s.firstDay(today, data.log)))}.",
+                    style = Small, color = p.muted,
+                )
+                if (prep != null) {
+                    FlowRow(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Text(numLabel("Allenamenti ", "${prep.workouts}"), style = Small)
+                        Text(numLabel("Giorni segnati ", "${prep.daysLogged}"), style = Small)
+                        prep.avgWeight?.let {
+                            Text(numLabel("Peso di partenza ", fmt1(it) + " kg"), style = Small)
+                        }
+                    }
+                    if (prep.avgWeight != null) {
+                        Muted(
+                            "Media delle ultime ${prep.weighIns} pesate prima dell’inizio: confrontala con le medie delle settimane.",
+                            Modifier.padding(top = 4.dp), Tiny,
+                        )
+                    }
+                }
+                if (todayIdx < 0) {
+                    Btn("Segna oggi", Modifier.padding(top = 10.dp).fillMaxWidth()) {
+                        vm.selectedDay = null
+                        vm.tab = Tab.OGGI
+                    }
+                }
+            }
+        }
         Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Stat("${st.done}/${st.planned}", "Sedute fatte", Modifier.weight(1f))
             Stat("${st.foodOk}", "Giorni di cibo in linea", Modifier.weight(1f))

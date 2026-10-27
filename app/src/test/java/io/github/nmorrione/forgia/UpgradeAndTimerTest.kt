@@ -1,4 +1,4 @@
-package io.github.nmorrione.forgia
+﻿package io.github.nmorrione.forgia
 
 import io.github.nmorrione.forgia.data.DayLog
 import io.github.nmorrione.forgia.data.Defaults
@@ -23,7 +23,7 @@ class UpgradeAndTimerTest {
 
     /** Un file salvato dalla 0.1.0: senza timer e con schema 1. */
     private fun v1File(): String {
-        val data = Defaults.appData().copy(
+        val data = Defaults.appData(Defaults.ORIGINAL_START).copy(
             log = TrainingLog(mapOf("2026-11-24" to DayLog(done = true, weight = 70.4, sets = mapOf("ua1" to listOf(SetEntry(60.0, 7)))))),
         )
         val obj = Json.parseToJsonElement(Store.encode(data)).jsonObject
@@ -38,13 +38,13 @@ class UpgradeAndTimerTest {
         val day = loaded.log.days.getValue("2026-11-24")
         assertEquals(70.4, day.weight!!, 0.0)
         assertEquals(listOf(SetEntry(60.0, 7)), day.sets["ua1"])
-        assertEquals(Defaults.program(), loaded.program)
+        assertEquals(Defaults.program(Defaults.ORIGINAL_START), loaded.program)
     }
 
     @Test fun unknownFieldsFromNewerVersionsAreIgnored() {
-        val obj = Json.parseToJsonElement(Store.encode(Defaults.appData())).jsonObject
+        val obj = Json.parseToJsonElement(Store.encode(Defaults.appData(Defaults.ORIGINAL_START))).jsonObject
         val newer = JsonObject(obj + ("campoFuturo" to JsonPrimitive("x")))
-        assertEquals(Defaults.program(), Store.decode(newer.toString()).program)
+        assertEquals(Defaults.program(Defaults.ORIGINAL_START), Store.decode(newer.toString()).program)
     }
 
     @Test fun intervalSteps() {

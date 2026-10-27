@@ -11,6 +11,9 @@ data class PrevSets(val date: LocalDate, val sets: List<SetEntry>)
 
 data class Stats(val planned: Int, val done: Int, val foodOk: Int)
 
+/** Quello che hai segnato prima dell'inizio del programma. */
+data class PrepSummary(val daysLogged: Int, val workouts: Int, val avgWeight: Double?, val weighIns: Int)
+
 enum class Advice { UP, DOWN, HOLD, WAIT }
 
 data class CalorieAdvice(val kind: Advice, val text: String, val deltaKcal: Int = 0)
@@ -53,6 +56,20 @@ class Tracker(private val s: Schedule, private val log: TrainingLog) {
             if (d.food == 1) foodOk++
         }
         return Stats(planned, done, foodOk)
+    }
+
+    /** Preparazione: allenamenti segnati e media delle ultime 7 pesate prima dell'inizio. */
+    fun prepSummary(): PrepSummary? {
+        val startKey = s.start.toString()
+        val pre = log.days.entries.filter { it.key < startKey }.sortedBy { it.key }
+        if (pre.isEmpty()) return null
+        val weights = pre.mapNotNull { it.value.weight }.takeLast(7)
+        return PrepSummary(
+            daysLogged = pre.size,
+            workouts = pre.count { it.value.done },
+            avgWeight = if (weights.isEmpty()) null else weights.average(),
+            weighIns = weights.size,
+        )
     }
 
     /** L'ultima volta che hai segnato [logKey] prima di [before], anche in programmi precedenti. */

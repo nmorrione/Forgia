@@ -78,8 +78,10 @@ fun TodayScreen(vm: AppViewModel) {
     val t = remember(s, data.log) { Tracker(s, data.log) }
     val today = remember { LocalDate.now() }
     val todayIdx = s.indexOf(today)
-    val home = s.clampDay(todayIdx)
-    val sel = s.clampDay(vm.selectedDay ?: todayIdx)
+    // Prima dell'inizio si può già segnare: è la preparazione (giorni con indice negativo).
+    val first = s.firstDay(today, data.log)
+    val home = todayIdx.coerceIn(first, s.days - 1)
+    val sel = (vm.selectedDay ?: todayIdx).coerceIn(first, s.days - 1)
     val date = s.dateAt(sel)
     val key = date.toString()
     val e = t.day(sel)
@@ -91,27 +93,38 @@ fun TodayScreen(vm: AppViewModel) {
     ScreenColumn {
         // Navigazione tra i giorni
         Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            RoundIcon("‹", enabled = sel > 0) { vm.selectedDay = sel - 1 }
+            RoundIcon("‹", enabled = sel > first) { vm.selectedDay = sel - 1 }
             Column(Modifier.weight(1f).padding(horizontal = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(capitalize(It.dayTitle(date)), style = cond(22), textAlign = TextAlign.Center)
                 Text(
-                    "Settimana ${w + 1} di ${s.weeks}, ${s.phaseLabel(w)}",
+                    if (sel < 0) {
+                        "${s.phaseLabel(w)}, ${if (sel == -1) "manca 1 giorno" else "mancano ${-sel} giorni"} all’inizio"
+                    } else {
+                        "Settimana ${w + 1} di ${s.weeks}, ${s.phaseLabel(w)}"
+                    },
                     style = Small, color = p.muted, textAlign = TextAlign.Center,
                 )
             }
             RoundIcon("›", enabled = sel < s.days - 1) { vm.selectedDay = sel + 1 }
         }
-        if (todayIdx < 0 && sel == 0) {
+        if (todayIdx < 0 && sel == todayIdx) {
             val n = -todayIdx
-            Banner("Si parte ${It.dayTitle(s.start)}, tra $n ${if (n == 1) "giorno" else "giorni"}. Intanto puoi sfogliare il programma e provare i carichi.")
+            Banner(
+                "Il programma parte ${It.dayTitle(s.start)}, tra $n ${if (n == 1) "giorno" else "giorni"}. " +
+                    "Fino ad allora sei in preparazione: segui la settimana tipo con i carichi del primo blocco e segna peso e serie. " +
+                    "Dal primo giorno vedrai sotto ogni esercizio cosa hai fatto l’ultima volta.",
+            )
+        }
+        if (todayIdx == 0 && sel == 0 && data.log.days.isEmpty()) {
+            Banner("Il programma parte oggi. Se preferisci un altro giorno, cambia la data di inizio da Programma, in alto a destra.")
         }
         if (todayIdx >= s.days && sel == s.days - 1) {
             Banner("Le ${s.weeks} settimane sono finite. Confronta la media del peso e la vita della settimana 1 con l’ultima nel calendario. Quando vuoi, da Programma imposti il prossimo ciclo.")
         }
         if (sel != home) {
             val label = when {
-                todayIdx in 0 until s.days -> "Torna a oggi"
-                todayIdx < 0 -> "Vai al primo giorno"
+                todayIdx in first until s.days -> "Torna a oggi"
+                todayIdx < first -> "Vai al primo giorno"
                 else -> "Vai all’ultimo giorno"
             }
             Box(Modifier.fillMaxWidth().padding(top = 4.dp), contentAlignment = Alignment.Center) {
@@ -252,7 +265,8 @@ fun TodayScreen(vm: AppViewModel) {
         if (date.dayOfWeek.value == data.program.measureWeekday) {
             Spacer(Modifier.size(8.dp))
             MeasureField(
-                label = "Circonferenza vita (settimana ${w + 1})", unit = "cm", value = e.waist, placeholder = "76,0",
+                label = if (sel < 0) "Circonferenza vita" else "Circonferenza vita (settimana ${w + 1})",
+                unit = "cm", value = e.waist, placeholder = "76,0",
                 fieldKey = "$key/waist", help = "All’altezza dell’ombelico, pancia rilassata, dopo il bagno.",
             ) { v -> vm.updateDay(key) { it.copy(waist = v) } }
         }
