@@ -14,6 +14,8 @@ Tutto è modificabile dall'app, e i valori derivati si ricalcolano da soli.
 
 **Cibo**: gli obiettivi per i giorni di allenamento e di riposo, con i carboidrati calcolati dalle calorie. La giornata tipo è composta da alimenti con i valori per 100 g, quindi kcal e macro di ogni pasto sono calcolati. Ci sono anche le tabelle delle sostituzioni, calcolate, e il pulsante **Adatta le quantità**, che ricalcola i grammi delle fonti di proteine, carboidrati e grassi per centrare l'obiettivo.
 
+**Timer**: un timer classico che allo scadere fa suonare la sveglia di sistema, e un timer a intervalli per i circuiti. Negli intervalli imposti lavoro, recupero, ripetizioni, serie, recupero tra le serie e preparazione, più una lista facoltativa di esercizi che ruotano. Negli ultimi tre secondi di ogni tratto suonano tre beep; l'inizio del lavoro ha un tono acuto e l'inizio del recupero uno grave. Alla fine del circuito suona una melodia diversa. I circuiti si salvano come preset. Il timer continua a schermo spento, con una notifica che ha i comandi pausa, salta e stop.
+
 **Guida**: i testi del diario, backup ed esportazione in JSON, ripristino della scheda di default.
 
 **Programma** (in alto a destra): data di inizio, durata, settimana tipo, sessioni ed esercizi, blocchi, fasi, regola di scarico e abitudini.
@@ -46,6 +48,16 @@ keyPassword=...
 ```
 
 Il file e il keystore sono esclusi da git. **Tienine una copia di sicurezza**: per installare un aggiornamento sopra l'app esistente serve la stessa firma. Senza `keystore.properties`, la release viene firmata con la chiave di debug.
+
+## Aggiornare l'app senza perdere i dati
+
+Installa il nuovo APK sopra quello vecchio, senza disinstallare: Android tiene i dati dell'app. Perché funzioni:
+
+- ogni release aumenta `versionCode` in `app/build.gradle.kts`;
+- ogni release è firmata con lo **stesso keystore** (altrimenti Android rifiuta l'aggiornamento);
+- il file dei dati ha un numero di versione (`SCHEMA_VERSION` in `Model.kt`). Ogni campo nuovo ha un valore predefinito, e le trasformazioni dei dati vecchi vanno in `Store.migrate`. Prima di aggiornare il formato, l'app salva una copia del file com'era (`forgia.json.vN.bak`).
+
+I test in `UpgradeAndTimerTest` leggono un file nel formato della 0.1.0 e verificano che diario e programma restino uguali. Per sicurezza, prima di un aggiornamento puoi comunque esportare un backup dalla Guida.
 
 ## Test
 

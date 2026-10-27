@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +37,7 @@ import io.github.nmorrione.forgia.ui.screens.CalendarScreen
 import io.github.nmorrione.forgia.ui.screens.FoodScreen
 import io.github.nmorrione.forgia.ui.screens.GuideScreen
 import io.github.nmorrione.forgia.ui.screens.PlansScreen
+import io.github.nmorrione.forgia.ui.screens.TimerScreen
 import io.github.nmorrione.forgia.ui.screens.TodayScreen
 import io.github.nmorrione.forgia.ui.theme.ForgiaTheme
 import io.github.nmorrione.forgia.ui.theme.Pal
@@ -88,6 +90,7 @@ private fun MainTabs(vm: AppViewModel) {
                 Tab.OGGI -> TodayScreen(vm)
                 Tab.CALENDARIO -> CalendarScreen(vm)
                 Tab.SCHEDE -> PlansScreen(vm)
+                Tab.TIMER -> TimerScreen(vm)
                 Tab.CIBO -> FoodScreen(vm)
                 Tab.GUIDA -> GuideScreen(vm)
             }
@@ -95,7 +98,14 @@ private fun MainTabs(vm: AppViewModel) {
         // Barra delle sezioni
         Column(Modifier.fillMaxWidth().background(p.surface).navigationBarsPadding()) {
             HorizontalDivider(color = p.line)
-            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                // Sei sezioni: sui telefoni stretti il testo si rimpicciolisce per starci.
+                val per = minOf(maxWidth, 560.dp) / Tab.entries.size
+                val labelSize = when {
+                    per < 62.dp -> 13
+                    per < 70.dp -> 15
+                    else -> 16
+                }
                 Row(Modifier.widthIn(max = 560.dp).fillMaxWidth()) {
                     Tab.entries.forEach { t ->
                         val on = vm.tab == t
@@ -111,9 +121,10 @@ private fun MainTabs(vm: AppViewModel) {
                             }
                             Text(
                                 t.label,
-                                style = cond(16),
+                                style = cond(labelSize),
                                 color = if (on) p.ink else p.muted,
                                 maxLines = 1,
+                                softWrap = false,
                                 modifier = Modifier.padding(top = 15.dp, bottom = 17.dp),
                             )
                         }

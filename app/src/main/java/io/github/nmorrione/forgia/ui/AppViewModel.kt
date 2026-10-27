@@ -19,7 +19,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
-enum class Tab(val label: String) { OGGI("Oggi"), CALENDARIO("Calendario"), SCHEDE("Schede"), CIBO("Cibo"), GUIDA("Guida") }
+enum class Tab(val label: String) {
+    OGGI("Oggi"), CALENDARIO("Calendario"), SCHEDE("Schede"), TIMER("Timer"), CIBO("Cibo"), GUIDA("Guida")
+}
 
 enum class SectionKind(val title: String) { GUIDE("Testi della guida"), PROGRAM_INFO("Testi delle schede"), NUTRITION("Testi dell’alimentazione") }
 
@@ -49,6 +51,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     var selectedDay by mutableStateOf<Int?>(null)
     var planTab by mutableStateOf<String?>(null)
     var foodDay by mutableStateOf(DayType.TRAIN)
+    var timerIntervals by mutableStateOf(false)
     val stack = mutableStateListOf<Route>()
 
     private var saveJob: Job? = null

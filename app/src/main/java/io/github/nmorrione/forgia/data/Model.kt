@@ -3,14 +3,55 @@ package io.github.nmorrione.forgia.data
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
-/** Tutto ciò che l'app salva: configurazione (programma, alimentazione, testi) e diario. */
+/**
+ * Versione del formato salvato. Ogni campo nuovo deve avere un valore predefinito,
+ * così i file delle versioni precedenti si leggono senza perdere niente.
+ * 1: versione 0.1.0. 2: aggiunte le impostazioni del timer.
+ */
+const val SCHEMA_VERSION = 2
+
+/** Tutto ciò che l'app salva: configurazione (programma, alimentazione, testi), timer e diario. */
 @Serializable
 data class AppData(
-    val schema: Int = 1,
+    val schema: Int = SCHEMA_VERSION,
     val program: Program,
     val nutrition: Nutrition,
     val guide: List<TextSection> = emptyList(),
     val log: TrainingLog = TrainingLog(),
+    val timer: TimerSettings = TimerSettings(),
+)
+
+/* ---------- Timer ---------- */
+
+@Serializable
+enum class TimerSound {
+    /** Volume dei contenuti multimediali: si mescola alla musica. */
+    MEDIA,
+    /** Volume della sveglia: suona anche col telefono in silenzioso. */
+    ALARM,
+}
+
+@Serializable
+data class IntervalConfig(
+    val name: String = "Circuito",
+    val workSec: Int = 40,
+    val restSec: Int = 20,
+    /** Ripetizioni di lavoro in ogni serie. */
+    val rounds: Int = 6,
+    val sets: Int = 1,
+    val setRestSec: Int = 120,
+    val prepareSec: Int = 10,
+    /** Facoltativi: uno per ripetizione, ricominciano dal primo se sono meno. */
+    val exercises: List<String> = emptyList(),
+)
+
+@Serializable
+data class TimerSettings(
+    val countdownSec: Int = 90,
+    val interval: IntervalConfig = Defaults.intervalPresets().first(),
+    val presets: List<IntervalConfig> = Defaults.intervalPresets(),
+    val sound: TimerSound = TimerSound.MEDIA,
+    val vibrate: Boolean = true,
 )
 
 /* ---------- Programma di allenamento ---------- */

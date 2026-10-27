@@ -12,6 +12,12 @@ object Defaults {
         guide = guide(),
     )
 
+    fun intervalPresets() = listOf(
+        IntervalConfig("Circuito corpo libero", workSec = 40, restSec = 20, rounds = 6, sets = 3, setRestSec = 120, prepareSec = 10),
+        IntervalConfig("Tabata", workSec = 20, restSec = 10, rounds = 8, sets = 1, setRestSec = 0, prepareSec = 10),
+        IntervalConfig("EMOM 10 minuti", workSec = 45, restSec = 15, rounds = 10, sets = 1, setRestSec = 0, prepareSec = 10),
+    )
+
     private fun p(sets: Int, min: Int, max: Int, suffix: String = "") = Prescription(sets, min, max, suffix)
 
     private fun ex(
