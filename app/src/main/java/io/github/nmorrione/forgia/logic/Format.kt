@@ -48,6 +48,9 @@ fun fmtInt(v: Int): String = String.format(Locale.ITALY, "%,d", v)
 
 fun signed1(v: Double): String = (if (v >= 0) "+" else "−") + fmt1(abs(v))
 
+/** +0,15 / −0,4: segno sempre visibile, al massimo due decimali. */
+fun signed2(v: Double): String = (if (v >= 0) "+" else "−") + fmtNum(abs(v))
+
 fun parseNum(s: String): Double? = s.trim().replace(',', '.').toDoubleOrNull()
 
 fun capitalize(s: String) = s.replaceFirstChar { it.uppercase() }

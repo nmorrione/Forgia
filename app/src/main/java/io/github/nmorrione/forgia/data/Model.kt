@@ -6,9 +6,9 @@ import kotlin.math.roundToInt
 /**
  * Versione del formato salvato. Ogni campo nuovo deve avere un valore predefinito,
  * così i file delle versioni precedenti si leggono senza perdere niente.
- * 1: versione 0.1.0. 2: aggiunte le impostazioni del timer.
+ * 1: versione 0.1.0. 2: aggiunte le impostazioni del timer. 3: obiettivo del ciclo e archivio dei cicli.
  */
-const val SCHEMA_VERSION = 2
+const val SCHEMA_VERSION = 3
 
 /** Tutto ciò che l'app salva: configurazione (programma, alimentazione, testi), timer e diario. */
 @Serializable
@@ -19,6 +19,27 @@ data class AppData(
     val guide: List<TextSection> = emptyList(),
     val log: TrainingLog = TrainingLog(),
     val timer: TimerSettings = TimerSettings(),
+    /** I cicli conclusi, dal più vecchio. Il diario resta in [log], legato alle date. */
+    val cycles: List<CycleRecord> = emptyList(),
+)
+
+/* ---------- Cicli ---------- */
+
+@Serializable
+enum class Goal(val label: String) {
+    BULK("Massa"),
+    CUT("Definizione"),
+    MAINTENANCE("Mantenimento"),
+}
+
+/** Un ciclo concluso: il programma e gli obiettivi com'erano, per rifarne il riepilogo. */
+@Serializable
+data class CycleRecord(
+    val program: Program,
+    val train: DayTarget,
+    val rest: DayTarget,
+    val adjustments: List<Adjustment> = emptyList(),
+    val endedOn: String,
 )
 
 /* ---------- Timer ---------- */
@@ -75,6 +96,7 @@ data class Program(
     /** Giorno della misura della vita: 1 = lunedì … 7 = domenica. */
     val measureWeekday: Int = 7,
     val info: List<TextSection> = emptyList(),
+    val goal: Goal = Goal.BULK,
 ) {
     fun session(id: String?): SessionType? = sessions.firstOrNull { it.id == id }
 }

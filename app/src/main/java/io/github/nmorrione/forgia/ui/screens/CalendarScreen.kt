@@ -49,8 +49,11 @@ import io.github.nmorrione.forgia.logic.Schedule
 import io.github.nmorrione.forgia.logic.Tracker
 import io.github.nmorrione.forgia.logic.fmt1
 import io.github.nmorrione.forgia.logic.signed1
+import io.github.nmorrione.forgia.logic.signed2
 import io.github.nmorrione.forgia.ui.AppViewModel
+import io.github.nmorrione.forgia.ui.Route
 import io.github.nmorrione.forgia.ui.Tab
+import io.github.nmorrione.forgia.ui.components.LinkBtn
 import io.github.nmorrione.forgia.ui.components.Btn
 import io.github.nmorrione.forgia.ui.components.CardBox
 import io.github.nmorrione.forgia.ui.components.Dot
@@ -86,6 +89,17 @@ fun CalendarScreen(vm: AppViewModel) {
     val delta = if (firstW >= 0 && lastW > firstW) avgs[lastW]!! - avgs[firstW]!! else null
 
     ScreenColumn {
+        // Fine ciclo: riepilogo e prossimo ciclo
+        if (s.isFinished(today)) {
+            CardBox(Modifier.padding(top = 12.dp)) {
+                Text(if (todayIdx == s.days - 1) "Ultimo giorno del ciclo" else "Ciclo finito", style = cond(20))
+                Muted("Guarda com’è andata e prepara il prossimo: massa, definizione o mantenimento.", Modifier.padding(top = 2.dp))
+                Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Btn("Riepilogo", Modifier.weight(1f)) { vm.push(Route.CycleSummary) }
+                    Btn("Prossimo ciclo", Modifier.weight(1f), filled = true) { vm.push(Route.NextCycle) }
+                }
+            }
+        }
         // Preparazione: quello che hai segnato prima dell'inizio
         val prep = t.prepSummary()
         if (prep != null || todayIdx < 0) {
@@ -239,7 +253,26 @@ fun CalendarScreen(vm: AppViewModel) {
                 }
             }
         }
-        Note("Ritmo ideale: da +0,15 a +0,3 kg a settimana. Le regole per correggere le calorie sono nella Guida, e qui sopra compare la correzione quando serve.")
+        val rule = data.nutrition.adjust
+        Note("Ritmo previsto per questo ciclo (${data.program.goal.label.lowercase()}): da ${signed2(rule.minWeeklyGain)} a ${signed2(rule.maxWeeklyGain)} kg a settimana. Qui sopra compare la correzione delle calorie quando serve.")
+        if (!s.isFinished(today) && todayIdx >= 0) {
+            LinkBtn("Riepilogo del ciclo finora", Modifier.padding(top = 6.dp)) { vm.push(Route.CycleSummary) }
+        }
+
+        if (data.cycles.isNotEmpty()) {
+            H2("Cicli precedenti")
+            data.cycles.asReversed().forEachIndexed { k, rec ->
+                val index = data.cycles.lastIndex - k
+                val rs = Schedule(rec.program)
+                CardBox(Modifier.padding(bottom = 8.dp), onClick = { vm.push(Route.ArchivedCycle(index)) }) {
+                    Text(rec.program.name, style = cond(19))
+                    Text(
+                        "${rec.program.goal.label} · ${It.shortDate(rs.start)} ${rs.start.year} – ${It.shortDate(rs.end)} ${rs.end.year}",
+                        style = Tiny, color = p.muted,
+                    )
+                }
+            }
+        }
     }
 }
 

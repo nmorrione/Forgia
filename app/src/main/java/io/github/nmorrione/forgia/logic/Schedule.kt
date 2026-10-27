@@ -55,6 +55,7 @@ class Schedule(val program: Program) {
         val ph = phase(week)
         return when {
             week < 0 -> "Preparazione (RIR ${ph.rir})"
+            week >= weeks -> "Dopo la fine del ciclo"
             ph.deload -> "Settimana di scarico"
             else -> "${blockName(ph.block)} (RIR ${ph.rir})"
         }
@@ -68,6 +69,17 @@ class Schedule(val program: Program) {
         val firstLogged = log.days.keys.minOrNull()?.let { runCatching { indexOf(LocalDate.parse(it)) }.getOrNull() }
         return listOfNotNull(0, indexOf(today), firstLogged).min().coerceAtLeast(-120)
     }
+
+    /**
+     * L'ultimo giorno raggiungibile: dopo la fine del ciclo si continua a segnare
+     * (oggi o l'ultimo giorno segnato), fino a 120 giorni dopo.
+     */
+    fun lastDay(today: LocalDate, log: TrainingLog): Int {
+        val lastLogged = log.days.keys.maxOrNull()?.let { runCatching { indexOf(LocalDate.parse(it)) }.getOrNull() }
+        return listOfNotNull(days - 1, indexOf(today), lastLogged).max().coerceAtMost(days - 1 + 120)
+    }
+
+    fun isFinished(today: LocalDate): Boolean = indexOf(today) >= days - 1
 
     /** "Blocco 1, RIR 3" o "Scarico". */
     fun phaseShort(week: Int): String {

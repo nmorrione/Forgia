@@ -106,14 +106,20 @@ class Tracker(private val s: Schedule, private val log: TrainingLog) {
                 "$facts Hai già corretto le calorie il ${It.shortDate(LocalDate.parse(recent.date))}: aspetta altre $every settimane di dati.",
             )
         }
+        // Valido per massa, definizione e mantenimento: cambia solo l'intervallo previsto.
+        val range = "da ${signed2(rule.minWeeklyGain)} a ${signed2(rule.maxWeeklyGain)} kg a settimana"
         return when {
-            rate > rule.maxWeeklyGain || (waistDelta != null && waistDelta >= rule.waistAlarmCm) -> CalorieAdvice(
-                Advice.DOWN, "$facts Stai salendo troppo in fretta: togli ${rule.stepKcal} kcal al giorno.", -rule.stepKcal,
+            waistDelta != null && waistDelta >= rule.waistAlarmCm -> CalorieAdvice(
+                Advice.DOWN, "$facts La vita cresce troppo in fretta: togli ${rule.stepKcal} kcal al giorno.", -rule.stepKcal,
             )
+            rate > rule.maxWeeklyGain -> CalorieAdvice(
+                Advice.DOWN, "$facts Sei sopra il ritmo previsto ($range): togli ${rule.stepKcal} kcal al giorno.", -rule.stepKcal,
+            )
+            // Con la vita che cresce non si aggiunge niente, anche se il peso è fermo.
             rate < rule.minWeeklyGain && (waistDelta == null || waistDelta <= 0.0) -> CalorieAdvice(
-                Advice.UP, "$facts Il peso è quasi fermo: aggiungi ${rule.stepKcal} kcal al giorno.", rule.stepKcal,
+                Advice.UP, "$facts Sei sotto il ritmo previsto ($range): aggiungi ${rule.stepKcal} kcal al giorno.", rule.stepKcal,
             )
-            else -> CalorieAdvice(Advice.HOLD, "$facts Sei nel range: non toccare niente.")
+            else -> CalorieAdvice(Advice.HOLD, "$facts Sei nel ritmo previsto ($range): non toccare niente.")
         }
     }
 

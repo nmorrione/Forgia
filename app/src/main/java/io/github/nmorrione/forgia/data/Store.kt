@@ -27,6 +27,8 @@ class Store(private val file: File) {
             var r = d
             // 1 → 2: aggiunte le impostazioni del timer, nessun dato da trasformare.
             if (r.schema < 2) r = r.copy(schema = 2)
+            // 2 → 3: obiettivo del ciclo (Massa) e archivio dei cicli vuoto, nessun dato da trasformare.
+            if (r.schema < 3) r = r.copy(schema = 3)
             return r.copy(schema = maxOf(r.schema, SCHEMA_VERSION))
         }
     }

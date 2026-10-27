@@ -23,8 +23,8 @@ android {
         targetSdk = 35
         // Ogni release deve aumentare versionCode e usare la stessa firma: così si installa sopra
         // la precedente e i dati restano.
-        versionCode = 3
-        versionName = "0.3.0"
+        versionCode = 4
+        versionName = "0.4.0"
     }
 
     signingConfigs {

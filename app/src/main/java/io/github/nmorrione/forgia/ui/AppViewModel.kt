@@ -36,6 +36,11 @@ sealed interface Route {
     data class FoodEdit(val id: String) : Route
     data object SubstitutionsEdit : Route
     data class SectionsEdit(val kind: SectionKind) : Route
+    /** Riepilogo del ciclo in corso (o appena finito). */
+    data object CycleSummary : Route
+    /** Riepilogo di un ciclo dell'archivio. */
+    data class ArchivedCycle(val index: Int) : Route
+    data object NextCycle : Route
 }
 
 class AppViewModel(app: Application) : AndroidViewModel(app) {

@@ -34,6 +34,8 @@ import io.github.nmorrione.forgia.ui.edit.SessionEditor
 import io.github.nmorrione.forgia.ui.edit.SubstitutionsEditor
 import io.github.nmorrione.forgia.ui.edit.TargetsEditor
 import io.github.nmorrione.forgia.ui.screens.CalendarScreen
+import io.github.nmorrione.forgia.ui.screens.CycleSummaryScreen
+import io.github.nmorrione.forgia.ui.screens.NextCycleScreen
 import io.github.nmorrione.forgia.ui.screens.FoodScreen
 import io.github.nmorrione.forgia.ui.screens.GuideScreen
 import io.github.nmorrione.forgia.ui.screens.PlansScreen
@@ -67,6 +69,9 @@ private fun EditorHost(route: Route, vm: AppViewModel) {
         is Route.FoodEdit -> FoodEditor(vm, route.id)
         Route.SubstitutionsEdit -> SubstitutionsEditor(vm)
         is Route.SectionsEdit -> SectionsEditor(vm, route.kind)
+        Route.CycleSummary -> CycleSummaryScreen(vm, null)
+        is Route.ArchivedCycle -> CycleSummaryScreen(vm, route.index)
+        Route.NextCycle -> NextCycleScreen(vm)
     }
 }
 

@@ -47,7 +47,9 @@ import io.github.nmorrione.forgia.logic.capitalize
 import io.github.nmorrione.forgia.logic.fmtInt
 import io.github.nmorrione.forgia.logic.fmtNum
 import io.github.nmorrione.forgia.ui.AppViewModel
+import io.github.nmorrione.forgia.ui.Route
 import io.github.nmorrione.forgia.ui.components.Banner
+import io.github.nmorrione.forgia.ui.components.Btn
 import io.github.nmorrione.forgia.ui.components.CardBox
 import io.github.nmorrione.forgia.ui.components.Chip
 import io.github.nmorrione.forgia.ui.components.ChipRow
@@ -80,8 +82,10 @@ fun TodayScreen(vm: AppViewModel) {
     val todayIdx = s.indexOf(today)
     // Prima dell'inizio si può già segnare: è la preparazione (giorni con indice negativo).
     val first = s.firstDay(today, data.log)
-    val home = todayIdx.coerceIn(first, s.days - 1)
-    val sel = (vm.selectedDay ?: todayIdx).coerceIn(first, s.days - 1)
+    // Dopo la fine si continua a segnare finché non parte il ciclo successivo.
+    val last = s.lastDay(today, data.log)
+    val home = todayIdx.coerceIn(first, last)
+    val sel = (vm.selectedDay ?: todayIdx).coerceIn(first, last)
     val date = s.dateAt(sel)
     val key = date.toString()
     val e = t.day(sel)
@@ -99,13 +103,15 @@ fun TodayScreen(vm: AppViewModel) {
                 Text(
                     if (sel < 0) {
                         "${s.phaseLabel(w)}, ${if (sel == -1) "manca 1 giorno" else "mancano ${-sel} giorni"} all’inizio"
+                    } else if (sel >= s.days) {
+                        "Dopo la fine del ciclo (${It.shortDate(s.end)})"
                     } else {
                         "Settimana ${w + 1} di ${s.weeks}, ${s.phaseLabel(w)}"
                     },
                     style = Small, color = p.muted, textAlign = TextAlign.Center,
                 )
             }
-            RoundIcon("›", enabled = sel < s.days - 1) { vm.selectedDay = sel + 1 }
+            RoundIcon("›", enabled = sel < last) { vm.selectedDay = sel + 1 }
         }
         if (todayIdx < 0 && sel == todayIdx) {
             val n = -todayIdx
@@ -118,12 +124,25 @@ fun TodayScreen(vm: AppViewModel) {
         if (todayIdx == 0 && sel == 0 && data.log.days.isEmpty()) {
             Banner("Il programma parte oggi. Se preferisci un altro giorno, cambia la data di inizio da Programma, in alto a destra.")
         }
-        if (todayIdx >= s.days && sel == s.days - 1) {
-            Banner("Le ${s.weeks} settimane sono finite. Confronta la media del peso e la vita della settimana 1 con l’ultima nel calendario. Quando vuoi, da Programma imposti il prossimo ciclo.")
+        if (s.isFinished(today) && sel >= s.days - 1) {
+            CardBox(Modifier.padding(top = 12.dp)) {
+                Text(
+                    if (todayIdx == s.days - 1) "Oggi è l’ultimo giorno del ciclo." else "Il ciclo è finito il ${It.shortDate(s.end)}.",
+                    style = Body.copy(fontWeight = FontWeight.SemiBold),
+                )
+                Muted(
+                    "Guarda il riepilogo e scegli il prossimo ciclo. Intanto puoi continuare a segnare peso e allenamenti qui.",
+                    Modifier.padding(top = 4.dp),
+                )
+                Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Btn("Riepilogo", Modifier.weight(1f)) { vm.push(Route.CycleSummary) }
+                    Btn("Prossimo ciclo", Modifier.weight(1f), filled = true) { vm.push(Route.NextCycle) }
+                }
+            }
         }
         if (sel != home) {
             val label = when {
-                todayIdx in first until s.days -> "Torna a oggi"
+                todayIdx in first..last -> "Torna a oggi"
                 todayIdx < first -> "Vai al primo giorno"
                 else -> "Vai all’ultimo giorno"
             }

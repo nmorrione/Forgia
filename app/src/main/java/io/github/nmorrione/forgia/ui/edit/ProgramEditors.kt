@@ -31,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.nmorrione.forgia.data.Exercise
+import io.github.nmorrione.forgia.data.Goal
+import io.github.nmorrione.forgia.logic.NextCycle
 import io.github.nmorrione.forgia.data.Habit
 import io.github.nmorrione.forgia.data.Prescription
 import io.github.nmorrione.forgia.data.Program
@@ -109,6 +111,22 @@ fun ProgramEditor(vm: AppViewModel) {
 
     EditorScaffold("Programma", vm::pop) {
         TextIn("Nome del programma", prog.name, { v -> vm.updateProgram { it.copy(name = v) } })
+        Picker(
+            "Obiettivo del ciclo", Goal.entries.map { it to it.label }, prog.goal,
+            onSelect = { g ->
+                // Con l'obiettivo cambia anche il ritmo del peso previsto per le correzioni delle calorie.
+                vm.update { d ->
+                    d.copy(
+                        program = d.program.copy(goal = g),
+                        nutrition = d.nutrition.copy(adjust = NextCycle.rule(g, d.nutrition.adjust)),
+                    )
+                }
+            },
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 10.dp)) {
+            Btn("Riepilogo del ciclo", Modifier.weight(1f)) { vm.push(Route.CycleSummary) }
+            Btn("Prossimo ciclo", Modifier.weight(1f)) { vm.push(Route.NextCycle) }
+        }
 
         EditorSection("Date")
         CardBox {

@@ -22,6 +22,14 @@ Tutto è modificabile dall'app, e i valori derivati si ricalcolano da soli.
 
 Al primo avvio il programma parte da quel giorno; la data si cambia da **Programma**. Se la sposti in avanti, i giorni che mancano all'inizio sono la **preparazione**: si segnano come gli altri, con i carichi della prima settimana. Il calendario mostra quanti allenamenti hai fatto e il peso di partenza (media delle ultime pesate prima dell'inizio).
 
+**Fine del ciclo**: dall'ultimo giorno Oggi e Calendario propongono il **riepilogo** e il **prossimo ciclo**, e intanto si continua a segnare. Il riepilogo mostra:
+- peso e vita dall'inizio alla fine, e il ritmo in kg a settimana;
+- sedute fatte e giorni di cibo in linea;
+- i progressi di ogni esercizio, dalla prima seduta alla migliore, con la forza stimata;
+- il **mantenimento calorico stimato dai tuoi dati**: calorie medie del piano meno il surplus che spiega il ritmo del peso (7.700 kcal per kg).
+
+Il prossimo ciclo consiglia massa, definizione o mantenimento in base a peso e vita. Per l'obiettivo scelto prepara le settimane (scarico iniziale facoltativo, blocchi con il RIR che scende), le calorie partendo dal mantenimento stimato e il ritmo del peso per le correzioni, e ricalcola i pasti. Il ciclo concluso va nell'archivio, consultabile dal Calendario.
+
 Il diario è legato alle date del calendario, non al programma: se sposti l'inizio o ricominci un nuovo ciclo, carichi e pesi restano. Lo storico «ultima volta» continua anche tra un programma e l'altro.
 
 ## Compilare
