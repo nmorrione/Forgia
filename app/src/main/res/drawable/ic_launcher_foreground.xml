@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Incudine stilizzata con scintilla: 108dp, area sicura centrale di 66dp. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- piano dell'incudine con il corno a sinistra -->
+    <path
+        android:fillColor="#F0C030"
+        android:pathData="M30,46 L80,46 L80,56 L72,56 C68,56 64,59 64,63 L64,66 L46,66 L46,63 C46,59 42,56 38,56 C34,56 30,53 28,50 Z" />
+    <!-- base -->
+    <path
+        android:fillColor="#F0C030"
+        android:pathData="M44,70 L66,70 L70,78 L40,78 Z" />
+    <!-- scintille -->
+    <path
+        android:fillColor="#EE5D50"
+        android:pathData="M60,30 L63,38 L71,41 L63,44 L60,52 L57,44 L49,41 L57,38 Z" />
+    <path
+        android:fillColor="#5B8BF0"
+        android:pathData="M76,30 L77.5,34 L81.5,35.5 L77.5,37 L76,41 L74.5,37 L70.5,35.5 L74.5,34 Z" />
+</vector>

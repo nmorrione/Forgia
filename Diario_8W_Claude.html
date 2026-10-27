@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Massa pulita – 8 settimane</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F2;--surface:#FFFFFF;--surface2:#F5F7F8;--ink:#17202A;--muted:#5A6571;--line:#D3D9DF;
+  --ua:#2356C4;--ub:#D9A400;--lg:#CF3A2E;--pk:#2B9455;--rest:#A3ADB7;
+  --f1:#2B9455;--f2:#D9A400;--f3:#CF3A2E;
+  --btn:#17202A;--btnInk:#FFFFFF;
+  --cond:"Barlow Condensed","Arial Narrow","Roboto Condensed",system-ui,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161C;--surface:#1A2129;--surface2:#212A33;--ink:#E7EBEF;--muted:#98A4B0;--line:#2D3742;
+    --ua:#5B8BF0;--ub:#F0C030;--lg:#EE5D50;--pk:#46B874;--rest:#5D6873;
+    --f1:#46B874;--f2:#F0C030;--f3:#EE5D50;
+    --btn:#E7EBEF;--btnInk:#11161C;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161C;--surface:#1A2129;--surface2:#212A33;--ink:#E7EBEF;--muted:#98A4B0;--line:#2D3742;
+  --ua:#5B8BF0;--ub:#F0C030;--lg:#EE5D50;--pk:#46B874;--rest:#5D6873;
+  --f1:#46B874;--f2:#F0C030;--f3:#EE5D50;
+  --btn:#E7EBEF;--btnInk:#11161C;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body);-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+main.wrap{padding-bottom:110px}
+h1,h2,h3{font-family:var(--cond);margin:0}
+h2{font-weight:600;font-size:25px;line-height:1.1;margin:30px 0 10px}
+h3{font-weight:600;font-size:20px;line-height:1.15}
+p{margin:0 0 10px}
+small,.muted{color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--ua);outline-offset:2px}
+img{max-width:100%}
+
+.top{padding:14px 0 4px}
+.top .wrap{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.brand{font:700 20px/1 var(--cond)}
+.sync{font-size:13px;color:var(--muted);text-align:right}
+
+.view{display:none}
+.view.on{display:block}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:20}
+.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.tabs button{background:none;border:0;padding:15px 2px 17px;font:600 16px/1 var(--cond);color:var(--muted);position:relative}
+.tabs button[aria-current="page"]{color:var(--ink)}
+.tabs button[aria-current="page"]::before{content:"";position:absolute;left:22%;right:22%;top:0;height:3px;background:var(--ink);border-radius:0 0 3px 3px}
+
+/* Navigazione giorno */
+.daynav{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;margin-top:8px}
+.icon{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:24px;line-height:1}
+.icon:disabled{opacity:.35;cursor:default}
+.dlabel{text-align:center}
+.dname{font:600 22px/1.1 var(--cond);text-transform:capitalize}
+.dsub{font-size:14px;color:var(--muted)}
+.linkbtn{display:block;margin:8px auto 0;background:none;border:0;color:var(--ua);font-weight:600;font-size:15px;padding:6px 10px}
+.banner{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin:12px 0 0;font-size:15px}
+
+/* Hero sessione: il bordo è il colore del disco */
+.hero{background:var(--surface);border-left:14px solid var(--c);border-radius:5px 16px 16px 5px;padding:18px 18px 16px;margin:14px 0 6px}
+.hero h1{font-weight:700;font-size:clamp(46px,14vw,68px);line-height:.88;letter-spacing:-.01em}
+.hero .sub{color:var(--muted);margin:8px 0 14px}
+.check{display:flex;align-items:center;gap:12px;font-weight:600;cursor:pointer;user-select:none}
+.check input{width:26px;height:26px;accent-color:var(--c, var(--ink));margin:0}
+.swap{margin-top:14px;font-size:14px}
+.swap summary{color:var(--muted);cursor:pointer;padding:4px 0}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:15px;font-weight:500;display:inline-flex;align-items:center;gap:8px}
+.chip[aria-pressed="true"]{background:var(--btn);color:var(--btnInk);border-color:var(--btn)}
+.chip .sw{width:10px;height:10px;border-radius:50%;background:var(--c)}
+
+/* Esercizi */
+.exlist{list-style:none;margin:0;padding:0;counter-reset:ex}
+.ex{background:var(--surface);border-radius:14px;padding:14px 14px 12px;margin:0 0 10px;counter-increment:ex;position:relative}
+.ex h3{padding-left:30px}
+.ex h3::before{content:counter(ex);position:absolute;left:14px;top:15px;width:22px;height:22px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);font:600 14px/20px var(--body);text-align:center;color:var(--muted)}
+.presc{font:600 19px/1.2 var(--cond);margin:4px 0 2px}
+.presc span{font:400 14px/1.4 var(--body);color:var(--muted);margin-left:6px}
+.cue{font-size:14px;color:var(--muted);margin:4px 0 8px}
+.prev{font-size:13px;color:var(--muted);margin:6px 0 0}
+.prev b{color:var(--ink);font-weight:600}
+
+input[type=text],textarea{width:100%;font:16px/1.4 var(--body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+textarea{min-height:84px;resize:vertical}
+.field{background:var(--surface);border-radius:14px;padding:14px}
+.field label{display:block;font-weight:600;margin-bottom:6px}
+.inline{display:flex;align-items:center;gap:10px}
+.inline input{max-width:130px;font:600 22px/1 var(--cond);text-align:center}
+.unit{font:600 20px/1 var(--cond);color:var(--muted)}
+
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 6px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
+.seg button[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.fd{width:11px;height:11px;border-radius:50%;display:inline-block}
+.fd.f1{background:var(--f1)}.fd.f2{background:var(--f2)}.fd.f3{background:var(--f3)}
+.target{font-size:15px;color:var(--muted);margin:-2px 0 12px}
+.target b{color:var(--ink)}
+
+.tips{background:var(--surface);border-radius:14px;padding:14px 16px}
+.tips ul{margin:0;padding-left:20px}
+.tips li{margin:0 0 8px}
+.tips li:last-child{margin:0}
+
+/* Calendario */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+.stat{background:var(--surface);border-radius:14px;padding:12px 14px}
+.stat b{display:block;font:700 30px/1 var(--cond)}
+.stat span{font-size:13px;color:var(--muted)}
+.dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dow{margin:18px 0 4px;font:600 14px/1 var(--cond);color:var(--muted);text-align:center}
+.cell{position:relative;min-height:68px;background:var(--surface);border:1px solid transparent;border-radius:9px;padding:9px 3px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;overflow:hidden}
+.cell .bar{position:absolute;left:0;right:0;top:0;height:5px;background:var(--c)}
+.cell .num{font:600 17px/1 var(--cond)}
+.cell .num small{font:500 11px/1 var(--body);margin-left:2px;color:var(--muted)}
+.cell .tag{font:600 12px/1 var(--cond);color:var(--muted)}
+.cell .mk{display:flex;gap:3px;align-items:center;min-height:12px}
+.cell .tick{font-size:12px;font-weight:700;color:var(--f1);line-height:1}
+.cell .w{font-size:10.5px;color:var(--muted);line-height:1}
+.cell.is-today{border-color:var(--ink)}
+.cell.is-sel{box-shadow:inset 0 0 0 2px var(--ua)}
+.cell.past-miss .num{color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:14px;height:5px;border-radius:2px;background:var(--c);margin-right:5px;vertical-align:middle}
+
+.weeks{display:flex;flex-direction:column;gap:8px}
+.wk{background:var(--surface);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.wk h3{font-size:19px}
+.wk .ph{font-size:13px;color:var(--muted)}
+.wk .nums{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px}
+.wk .nums b{font-weight:600}
+.wk .waist{display:flex;align-items:center;gap:6px}
+.wk .waist input{width:76px;padding:7px 8px;text-align:center;font:600 17px/1 var(--cond)}
+.pos{color:var(--f1)}.neg{color:var(--f3)}
+
+.chart{background:var(--surface);border-radius:14px;padding:12px 10px 6px}
+.chart svg{display:block;width:100%;height:auto}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .lbl{fill:var(--muted);font:11px var(--body)}
+.chart .dt{fill:var(--muted);opacity:.55}
+.chart .avg{fill:none;stroke:var(--ua);stroke-width:2.5;stroke-linejoin:round}
+.chart .avgd{fill:var(--ua)}
+.empty{color:var(--muted);font-size:15px;padding:16px 6px;margin:0}
+
+/* Schede */
+.planseg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.planseg button{border:0;border-radius:10px;padding:12px 4px;background:var(--surface);font:600 17px/1 var(--cond);border-bottom:5px solid var(--c)}
+.planseg button[aria-pressed="true"]{background:var(--btn);color:var(--btnInk)}
+.planhead{margin:18px 0 10px}
+.planhead h1{font-size:44px;line-height:.95}
+.planhead p{color:var(--muted);margin-top:6px}
+.pcols{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;margin:4px 0}
+.pcols b{font:600 17px/1.2 var(--cond)}
+
+details.card{background:var(--surface);border-radius:14px;margin:0 0 8px}
+details.card>summary{list-style:none;cursor:pointer;padding:14px 44px 14px 16px;font:600 20px/1.2 var(--cond);position:relative}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::after{content:"+";position:absolute;right:16px;top:10px;font:500 26px/1 var(--body);color:var(--muted)}
+details.card[open]>summary::after{content:"–"}
+details.card .body{padding:0 16px 14px}
+details.card ul,details.card ol{margin:0 0 8px;padding-left:20px}
+details.card li{margin:0 0 7px}
+.weeksq{list-style:none;padding:0!important;margin:0}
+.weeksq li{display:grid;grid-template-columns:28px 1fr;gap:8px;margin:0 0 10px}
+.weeksq .n{font:700 22px/1 var(--cond);color:var(--muted)}
+.weeksq .d{font-weight:600}
+
+/* Cibo */
+.macros{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.macro{background:var(--surface);border-radius:14px;padding:12px 14px}
+.macro b{display:block;font:700 34px/1 var(--cond)}
+.macro span{font-size:13px;color:var(--muted)}
+.modeseg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 10px}
+.modeseg button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;font-weight:600}
+.modeseg button[aria-pressed="true"]{background:var(--btn);color:var(--btnInk);border-color:var(--btn)}
+.meal{display:grid;grid-template-columns:52px 1fr;gap:10px;margin:0 0 10px}
+.meal .t{font:700 19px/1.2 var(--cond);color:var(--muted);padding-top:14px;text-align:right}
+.meal .box{background:var(--surface);border-radius:14px;padding:13px 14px}
+.meal .box ul{margin:6px 0 4px;padding-left:18px}
+.meal .box li{margin:0 0 3px}
+.meal .k{font-size:13px;color:var(--muted)}
+.meal details{margin-top:6px;font-size:15px}
+.meal details summary{color:var(--ua);font-weight:600;cursor:pointer;padding:4px 0}
+.meal details ul{margin-top:4px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 16px/1.2 var(--cond);color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin-top:14px}
+.danger{border:1px solid var(--f3);color:var(--f3);background:none;border-radius:10px;padding:10px 14px;font-weight:600;margin-top:6px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><span class="brand">Massa pulita</span><span id="sync" class="sync">Caricamento…</span></div></header>
+
+<main class="wrap">
+  <section id="v-oggi" class="view" aria-label="Giorno"></section>
+  <section id="v-calendario" class="view" aria-label="Calendario"></section>
+  <section id="v-schede" class="view" aria-label="Schede"></section>
+  <section id="v-cibo" class="view" aria-label="Alimentazione"></section>
+  <section id="v-guida" class="view" aria-label="Guida"></section>
+</main>
+
+<nav class="tabs" aria-label="Sezioni"><div class="in">
+  <button data-view="oggi">Oggi</button>
+  <button data-view="calendario">Calendario</button>
+  <button data-view="schede">Schede</button>
+  <button data-view="cibo">Cibo</button>
+  <button data-view="guida">Guida</button>
+</div></nav>
+
+<script>
+/* ---------- Programma ---------- */
+const START = new Date(2026, 10, 23); // lunedì 23 novembre 2026
+const N = 56;
+const WEEKLY = ["pk","ua","rest","pk","ub","lg","rest"]; // lun → dom
+const MS = ["gen","feb","mar","apr","mag","giu","lug","ago","set","ott","nov","dic"];
+const MF = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
+const WD = ["domenica","lunedì","martedì","mercoledì","giovedì","venerdì","sabato"];
+
+const SESS = {
+  pk:   {name:"Parkour", short:"PK", sub:"Tecnica, salti e potenziamento a corpo libero."},
+  ua:   {name:"Upper A", short:"A", sub:"Forza: spinta e tirata pesanti."},
+  ub:   {name:"Upper B", short:"B", sub:"Volume: petto alto, schiena, spalle e braccia."},
+  lg:   {name:"Gambe", short:"G", sub:"Squat, catena posteriore, polpacci e core."},
+  rest: {name:"Riposo", short:"–", sub:"Recupero, un po’ di movimento e meal prep."}
+};
+
+const EX = {
+  ua: [
+    {id:"ua1", n:"Panca piana con bilanciere", b1:"4 × 5–7", b2:"5 × 4–6", r:"3 min", c:"Scapole addotte, piedi ben piantati, bilanciere al petto basso. Lavora nel rack con i fermi di sicurezza."},
+    {id:"ua2", n:"Trazioni zavorrate prone", b1:"4 × 5–8", b2:"5 × 4–6", r:"2–3 min", c:"Catena alla cintura. Mento sopra la sbarra, discesa controllata fino a braccia distese. Se il PK di lunedì ti ha svuotato la presa, togli zavorra, non serie."},
+    {id:"ua3", n:"Military press in piedi", b1:"3 × 6–8", b2:"4 × 5–7", r:"2–3 min", c:"Glutei e addome contratti, niente schiena inarcata. Parti dai ganci del rack."},
+    {id:"ua4", n:"Rematore con bilanciere", b1:"3 × 8–10", b2:"3 × 6–8", r:"2 min", c:"Busto a circa 45°, tira verso l’ombelico, nessuno slancio."},
+    {id:"ua5", n:"Dip zavorrate", b1:"3 × 8–12", b2:"3 × 6–10", r:"2 min", c:"Busto leggermente in avanti, scendi finché la spalla arriva poco sotto il gomito."},
+    {id:"ua6", n:"Curl con bilanciere", b1:"3 × 8–12", b2:"3 × 8–12", r:"90 s", c:"Gomiti fermi ai fianchi, discesa in 2–3 secondi."},
+    {id:"ua7", n:"Alzate laterali con manubri", b1:"3 × 12–20", b2:"4 × 12–20", r:"60–90 s", c:"Busto appena inclinato in avanti, gomiti morbidi, sali fino all’altezza delle spalle."}
+  ],
+  ub: [
+    {id:"ub1", n:"Panca inclinata con manubri", b1:"4 × 8–12", r:"2 min", c:"Panca a circa 30°, discesa profonda, in alto i manubri si avvicinano senza sbattere.",
+      id2:"ub1b", n2:"Panca inclinata con bilanciere", b2:"4 × 6–10", c2:"Stessa inclinazione (30°), presa poco più larga delle spalle."},
+    {id:"ub2", n:"Chin-up zavorrati (presa supina)", b1:"3 × 6–10", b2:"4 × 6–8", r:"2 min", c:"Presa supina alla larghezza delle spalle: lavora molto anche i bicipiti."},
+    {id:"ub3", n:"Rematore con manubrio a un braccio", b1:"3 × 10–12 per lato", b2:"3 × 10–12 per lato", r:"90 s", c:"Mano e ginocchio sulla panca, porta il gomito verso l’anca, 1 secondo di pausa in alto."},
+    {id:"ub4", n:"Shoulder press con manubri, seduto", b1:"3 × 8–12", b2:"3 × 8–12", r:"2 min", c:"Schienale quasi verticale, scendi fino all’altezza del mento."},
+    {id:"ub5", n:"Alzate laterali con manubri", b1:"4 × 12–20", b2:"4 × 12–20", r:"60–90 s", c:"Seconda dose della settimana: i deltoidi laterali sono ciò che allarga le spalle."},
+    {id:"ub6", n:"Alzate posteriori a busto flesso", b1:"3 × 15–20", b2:"3 × 15–20", r:"60 s", c:"Petto appoggiato alla panca inclinata, apri le braccia guidando con i gomiti. Carichi leggeri."},
+    {id:"ub7", n:"Estensioni tricipiti sopra la testa", b1:"3 × 10–15", b2:"3 × 10–15", r:"superserie", c:"Un manubrio a due mani, seduto, allungamento completo dietro la testa. In superserie con il prossimo esercizio."},
+    {id:"ub8", n:"Curl su panca inclinata con manubri", b1:"3 × 10–15", b2:"3 × 10–15", r:"90 s dopo la coppia", c:"Panca a 45–60°, braccia che pendono dietro al busto: massimo allungamento del bicipite."}
+  ],
+  lg: [
+    {id:"lg1", n:"Squat con bilanciere", b1:"4 × 5–8", b2:"5 × 4–6", r:"3 min", c:"Bilanciere alto sui trapezi, fermi di sicurezza alla giusta altezza, scendi almeno al parallelo. Lunedì c’è PK: resta sempre ad almeno 1–2 ripetizioni dal cedimento."},
+    {id:"lg2", n:"Stacco rumeno", b1:"3 × 8–10", b2:"3 × 6–8", r:"2–3 min", c:"Ginocchia leggermente flesse e ferme, anche indietro, il bilanciere sfiora le cosce. Scendi finché la schiena resta neutra."},
+    {id:"lg3", n:"Affondi bulgari con manubri", b1:"3 × 8–12 per gamba", b2:"3 × 8–12 per gamba", r:"90 s", c:"Piede dietro sulla panca. Busto inclinato in avanti lavora di più i glutei, busto dritto i quadricipiti."},
+    {id:"lg4", n:"Hip thrust con bilanciere", b1:"3 × 8–12", b2:"4 × 8–10", r:"2 min", c:"Scapole sulla panca, tatami o asciugamano sotto il bilanciere, 1 secondo di pausa in alto con il mento verso il petto."},
+    {id:"lg5", n:"Nordic curl", b1:"3 × 4–8", b2:"3 × 4–8", r:"2 min", c:"Ginocchia sul tatami, talloni bloccati sotto il bilanciere carico sul rack basso. Scendi lentamente quanto riesci, spingi con le mani per risalire. Protegge i femorali nei salti."},
+    {id:"lg6", n:"Calf in piedi a una gamba", b1:"4 × 10–15 per gamba", b2:"4 × 10–15 per gamba", r:"60 s", c:"Avampiede su un disco, manubrio nella mano dello stesso lato, 1 secondo di pausa in basso in allungamento."},
+    {id:"lg7", n:"Leg raise alla sbarra", b1:"3 × 8–15", b2:"3 × 8–15", r:"60–90 s", c:"Arrotola il bacino verso l’alto, niente oscillazioni. Quando diventa facile, gambe tese o un manubrio leggero tra i piedi."}
+  ]
+};
+
+const PHASES = [
+  {d:"23–29 nov", t:"Blocco 1, RIR 3", x:"Trova i carichi giusti e cura la tecnica."},
+  {d:"30 nov – 6 dic", t:"Blocco 1, RIR 2", x:"Inizia la doppia progressione."},
+  {d:"7–13 dic", t:"Blocco 1, RIR 2", x:"Aggiungi carico dove hai chiuso il range."},
+  {d:"14–20 dic", t:"Blocco 1, RIR 1", x:"La settimana più dura del blocco."},
+  {d:"21–27 dic", t:"Scarico", x:"Metà serie, carichi −10%, RIR 4. Coincide con Natale."},
+  {d:"28 dic – 3 gen", t:"Blocco 2, RIR 2", x:"Meno ripetizioni, più carico, una serie in più sui fondamentali."},
+  {d:"4–10 gen", t:"Blocco 2, RIR 1–2", x:"Spingi i carichi."},
+  {d:"11–17 gen", t:"Blocco 2, RIR 1", x:"Chiudi con i record della scheda."}
+];
+
+function phase(w){
+  if (w < 4) return {b:1, label:"Blocco 1", rir:["3","2","2","1"][w], deload:false};
+  if (w === 4) return {b:1, label:"Settimana di scarico", rir:"4", deload:true};
+  return {b:2, label:"Blocco 2", rir:["2","1–2","1"][Math.min(w-5,2)], deload:false};
+}
+function exFor(ex, ph){
+  const b2 = ph.b === 2;
+  return {
+    id: b2 && ex.id2 ? ex.id2 : ex.id,
+    n:  b2 && ex.n2 ? ex.n2 : ex.n,
+    c:  b2 && ex.c2 ? ex.c2 : ex.c,
+    p:  ph.deload ? deloadPresc(ex.b1) : (b2 ? (ex.b2 || ex.b1) : ex.b1),
+    r:  ex.r
+  };
+}
+function deloadPresc(p){
+  const parts = p.split(" × ");
+  return Math.ceil(+parts[0] / 2) + " × " + parts[1] + ", carico −10%";
+}
+
+/* ---------- Date ---------- */
+function dateAt(i){ const d = new Date(START); d.setDate(d.getDate() + i); return d; }
+function keyOf(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+function todayIndex(){ const t = new Date(); t.setHours(0,0,0,0); return Math.round((t - START) / 86400000); }
+const TODAY = todayIndex();
+let sel = Math.min(Math.max(TODAY, 0), N-1);
+
+/* ---------- Stato e salvataggio ---------- */
+const LS_KEY = "massa-pulita-8w-v1";
+let state = {v:1, days:{}, weeks:{}, updatedAt:0};
+let remoteRef = null, saveTimer = null, retried = false;
+
+function normalize(r){
+  const s = JSON.parse(JSON.stringify(r || {}));
+  s.days = s.days || {}; s.weeks = s.weeks || {}; s.updatedAt = s.updatedAt || 0; s.v = 1;
+  return s;
+}
+function loadLocal(){ try { const s = localStorage.getItem(LS_KEY); if (s) return normalize(JSON.parse(s)); } catch(e){} return null; }
+function saveLocal(){ try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){} }
+function setSync(s){
+  const el = document.getElementById("sync");
+  el.textContent = s === "ok" ? "Sincronizzato" : s === "saving" ? "Salvataggio…" : "Salvato su questo dispositivo";
+}
+function persist(){
+  state.updatedAt = Date.now();
+  saveLocal();
+  clearTimeout(saveTimer);
+  if (remoteRef){ setSync("saving"); saveTimer = setTimeout(pushRemote, 800); }
+  else setSync("local");
+}
+async function pushRemote(){
+  if (!remoteRef) return;
+  try { await remoteRef.set(JSON.parse(JSON.stringify(state))); retried = false; setSync("ok"); }
+  catch(e){
+    if (e && e.code === "unavailable" && !retried){ retried = true; setTimeout(pushRemote, 1500 + Math.random()*1500); }
+    else { setSync("local"); }
+  }
+}
+async function initRemote(){
+  if (!window.claude || typeof window.claude.use !== "function"){ setSync("local"); return; }
+  try {
+    const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+    if (!db || !user){ setSync("local"); return; }
+    const uid = await user.id();
+    if (!uid){ setSync("local"); return; }
+    const ref = db.collection("data/users/" + uid).doc("tracker");
+    const snap = await ref.get();
+    remoteRef = ref;
+    if (snap.exists){
+      const r = normalize(snap.data());
+      if (r.updatedAt > state.updatedAt){ state = r; saveLocal(); renderCurrent(); setSync("ok"); }
+      else if (state.updatedAt > r.updatedAt){ await pushRemote(); }
+      else setSync("ok");
+    } else if (state.updatedAt){ await pushRemote(); }
+    else setSync("ok");
+  } catch(e){ setSync("local"); }
+}
+
+function dayData(i, create){
+  const k = keyOf(dateAt(i));
+  if (!state.days[k] && create) state.days[k] = {};
+  return state.days[k] || {};
+}
+function sessAt(i){ const d = state.days[keyOf(dateAt(i))]; return (d && d.sess) || WEEKLY[i % 7]; }
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function num(v){ if (v == null || v === "") return null; const n = parseFloat(String(v).replace(",", ".")); return isFinite(n) ? n : null; }
+function f1(n){ return n.toFixed(1).replace(".", ","); }
+function weekAvg(w){
+  const a = [];
+  for (let i = w*7; i < w*7+7; i++){ const x = num(dayData(i).weight); if (x) a.push(x); }
+  return a.length ? a.reduce((s,x)=>s+x,0) / a.length : null;
+}
+function lastLog(id, before){
+  for (let i = before-1; i >= 0; i--){
+    const d = dayData(i);
+    if (d.log && d.log[id]) return {i, v:d.log[id]};
+  }
+  return null;
+}
+function shortDate(i){ const d = dateAt(i); return d.getDate() + " " + MS[d.getMonth()]; }
+
+/* ---------- Vista: Oggi ---------- */
+function renderOggi(){
+  const i = sel, d = dateAt(i), e = dayData(i), s = sessAt(i), S = SESS[s];
+  const w = Math.floor(i/7), ph = phase(w), train = s !== "rest";
+  let h = `
+  <div class="daynav">
+    <button class="icon" data-act="prev" ${i<=0?"disabled":""} aria-label="Giorno precedente">‹</button>
+    <div class="dlabel"><div class="dname">${WD[d.getDay()]} ${d.getDate()} ${MF[d.getMonth()]}</div>
+      <div class="dsub">Settimana ${w+1} di 8, ${ph.label}${ph.deload?"":" (RIR "+ph.rir+")"}</div></div>
+    <button class="icon" data-act="next" ${i>=N-1?"disabled":""} aria-label="Giorno successivo">›</button>
+  </div>`;
+  if (TODAY < 0 && i === 0) h += `<div class="banner">Si parte lunedì 23 novembre, tra ${-TODAY} ${-TODAY===1?"giorno":"giorni"}. Intanto puoi sfogliare il programma e provare i carichi.</div>`;
+  else if (TODAY >= 0 && TODAY < N && TODAY !== i) h += `<button class="linkbtn" data-act="today">Torna a oggi</button>`;
+  if (TODAY >= N && i === N-1) h += `<div class="banner">Le 8 settimane sono finite. Confronta la media del peso e la vita della settimana 1 con l’ultima nel calendario.</div>`;
+
+  h += `<div class="hero" style="--c:var(--${s})">
+    <h1>${S.name}</h1>
+    <p class="sub">${S.sub}</p>
+    ${train ? `<label class="check"><input type="checkbox" data-f="done" ${e.done?"checked":""}><span>Allenamento fatto</span></label>` : ""}
+    <details class="swap"><summary>Cambia la sessione di questo giorno</summary>
+      <div class="chips">${["pk","ua","ub","lg","rest"].map(k=>`<button class="chip" data-sess="${k}" aria-pressed="${k===s}" style="--c:var(--${k})"><span class="sw"></span>${SESS[k].name}</button>`).join("")}</div>
+    </details>
+  </div>`;
+
+  if (EX[s]){
+    h += `<h2>Esercizi</h2>
+    <p class="muted" style="font-size:14px">Riscaldamento: 5 minuti di mobilità, poi sul primo esercizio 50% × 8, 70% × 4, 85% × 2. Segna carico e ripetizioni di ogni serie.</p>
+    <ol class="exlist">` + EX[s].map(ex => {
+      const x = exFor(ex, ph), prev = lastLog(x.id, i), val = (e.log && e.log[x.id]) || "";
+      return `<li class="ex"><h3>${x.n}</h3>
+        <div class="presc">${x.p}<span>recupero ${x.r}</span></div>
+        <p class="cue">${x.c}</p>
+        <input type="text" data-log="${x.id}" value="${esc(val)}" placeholder="es. 60 kg × 7, 7, 6, 6" aria-label="Carichi e ripetizioni ${x.n}">
+        <p class="prev">${prev ? `Ultima volta (${shortDate(prev.i)}): <b>${esc(prev.v)}</b>` : "Prima volta: scegli un carico che rispetti il RIR della settimana."}</p>
+      </li>`;
+    }).join("") + `</ol>`;
+  } else if (s === "pk"){
+    h += `<h2>Note per il parkour</h2><div class="tips"><ul>
+      <li>Tecnica e salti all’inizio, quando sei fresco. Polsi e caviglie ben scaldati.</li>
+      <li>Nel potenziamento lascia 1–2 ripetizioni in riserva su trazioni e dip: ${d.getDay()===1?"domani c’è Upper A":"domani c’è Upper B"}.</li>
+      ${d.getDay()===1?"<li>Se le gambe sono ancora indolenzite dallo squat di sabato, riduci gli atterraggi ad alto impatto.</li>":""}
+      <li>Mangia lo spuntino pre-allenamento 1,5–2 ore prima.</li>
+    </ul></div>`;
+  } else {
+    const sun = d.getDay() === 0;
+    h += `<h2>Cosa fare oggi</h2><div class="tips"><ul>
+      <li>Meal prep per ${sun ? "lunedì, martedì e mercoledì" : "giovedì, venerdì e sabato"}.</li>
+      <li>Se riesci, 20–30 minuti di camminata e 10 minuti di mobilità per anche, caviglie e torace.</li>
+      ${sun ? "<li>Misura la vita al mattino (campo qui sotto). Ogni 2 settimane una foto dell’addome, stessa luce.</li>" : ""}
+      <li>Calorie da giorno di riposo: metà carboidrati a cena, niente shake post-allenamento.</li>
+    </ul></div>`;
+  }
+
+  h += `<h2>Alimentazione</h2>
+  <p class="target">Obiettivo di oggi: <b>${train ? "≈ 2.850 kcal" : "≈ 2.500 kcal"}</b>, <b>${train?"160":"155"} g di proteine</b>.</p>
+  <div class="seg" role="group" aria-label="Com’è andata con il cibo">
+    ${[["1","In linea"],["2","Quasi"],["3","Fuori"]].map(([v,l])=>`<button data-food="${v}" aria-pressed="${String(e.food)===v}"><span class="fd f${v}"></span>${l}</button>`).join("")}
+  </div>
+  <div class="chips">
+    <button class="chip" data-tog="prot" aria-pressed="${!!e.prot}">Proteine ≥ 150 g</button>
+    <button class="chip" data-tog="creat" aria-pressed="${!!e.creat}">Creatina presa</button>
+    <button class="chip" data-tog="water" aria-pressed="${!!e.water}">3 litri d’acqua</button>
+  </div>
+
+  <h2>Misure</h2>
+  <div class="field">
+    <label for="w-in">Peso al mattino</label>
+    <div class="inline"><input id="w-in" type="text" inputmode="decimal" data-f="weight" value="${esc(e.weight||"")}" placeholder="70,0"><span class="unit">kg</span></div>
+    <p class="muted" style="font-size:13px;margin:8px 0 0">A digiuno, dopo il bagno. Conta la media della settimana, non il singolo giorno.</p>
+  </div>`;
+  if (d.getDay() === 0){
+    h += `<div class="field" style="margin-top:8px">
+      <label for="waist-in">Circonferenza vita (settimana ${w+1})</label>
+      <div class="inline"><input id="waist-in" type="text" inputmode="decimal" data-waist="${w}" value="${esc(state.weeks[w]&&state.weeks[w].waist||"")}" placeholder="76,0"><span class="unit">cm</span></div>
+      <p class="muted" style="font-size:13px;margin:8px 0 0">All’altezza dell’ombelico, pancia rilassata, dopo il bagno.</p>
+    </div>`;
+  }
+  h += `<h2>Note</h2>
+  <textarea data-f="note" placeholder="Sensazioni, sonno, cosa hai mangiato fuori programma…">${esc(e.note||"")}</textarea>`;
+  document.getElementById("v-oggi").innerHTML = h;
+}
+
+/* ---------- Vista: Calendario ---------- */
+function renderCal(){
+  let planned = 0, done = 0, foodOk = 0;
+  for (let i = 0; i < N; i++){
+    const s = sessAt(i), e = dayData(i);
+    if (s !== "rest"){ planned++; if (e.done) done++; }
+    if (String(e.food) === "1") foodOk++;
+  }
+  const avgs = Array.from({length:8}, (_,w) => weekAvg(w));
+  const firstW = avgs.findIndex(a => a != null);
+  let lastW = -1; for (let w = 7; w >= 0; w--) if (avgs[w] != null){ lastW = w; break; }
+  const delta = firstW >= 0 && lastW > firstW ? avgs[lastW] - avgs[firstW] : null;
+
+  let h = `<div class="stats">
+    <div class="stat"><b>${done}/${planned}</b><span>Sedute fatte</span></div>
+    <div class="stat"><b>${foodOk}</b><span>Giorni di cibo in linea</span></div>
+    <div class="stat"><b>${lastW>=0 ? f1(avgs[lastW]) : "–"}</b><span>${lastW>=0 ? "Peso medio, settimana "+(lastW+1) : "Peso medio"}</span></div>
+    <div class="stat"><b>${delta!=null ? (delta>=0?"+":"−")+f1(Math.abs(delta)) : "–"}</b><span>kg dalla prima media</span></div>
+  </div>
+  <div class="dow"><span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span></div>
+  <div class="grid">`;
+  for (let i = 0; i < N; i++){
+    const d = dateAt(i), s = sessAt(i), e = dayData(i), wt = num(e.weight);
+    const mon = i === 0 || d.getDate() === 1;
+    h += `<button class="cell ${i===TODAY?"is-today":""} ${i===sel?"is-sel":""}" data-go="${i}" style="--c:var(--${s})" aria-label="${WD[d.getDay()]} ${d.getDate()} ${MF[d.getMonth()]}, ${SESS[s].name}${e.done?", fatto":""}">
+      <span class="bar"></span>
+      <span class="num">${d.getDate()}${mon?`<small>${MS[d.getMonth()]}</small>`:""}</span>
+      <span class="tag">${SESS[s].short}</span>
+      <span class="mk">${e.done?'<span class="tick">✓</span>':""}${e.food?`<span class="fd f${e.food}" style="width:8px;height:8px"></span>`:""}</span>
+      ${wt?`<span class="w">${f1(wt)}</span>`:""}
+    </button>`;
+  }
+  h += `</div>
+  <div class="legend">
+    <span><i style="--c:var(--pk)"></i>Parkour</span><span><i style="--c:var(--ua)"></i>Upper A</span>
+    <span><i style="--c:var(--ub)"></i>Upper B</span><span><i style="--c:var(--lg)"></i>Gambe</span>
+    <span><i style="--c:var(--rest)"></i>Riposo</span>
+    <span><span class="fd f1" style="width:8px;height:8px"></span> cibo in linea</span>
+  </div>
+  <p class="muted" style="font-size:13px;margin-top:6px">Tocca un giorno per aprirlo e compilarlo.</p>
+
+  <h2>Andamento del peso</h2>
+  <div class="chart">${chartSVG(avgs)}</div>
+
+  <h2>Settimane</h2><div class="weeks">`;
+  for (let w = 0; w < 8; w++){
+    let pl = 0, dn = 0;
+    for (let i = w*7; i < w*7+7; i++){ if (sessAt(i) !== "rest"){ pl++; if (dayData(i).done) dn++; } }
+    const a = avgs[w], pa = w > 0 ? avgs[w-1] : null;
+    const dd = a != null && pa != null ? a - pa : null;
+    const ws = state.weeks[w] && state.weeks[w].waist;
+    h += `<div class="wk">
+      <div><h3>Settimana ${w+1}</h3><div class="ph">${PHASES[w].d}, ${PHASES[w].t}</div></div>
+      <label class="waist"><input type="text" inputmode="decimal" data-waist="${w}" value="${esc(ws||"")}" placeholder="vita" aria-label="Vita settimana ${w+1} in cm"><span class="muted">cm</span></label>
+      <div class="nums"><span>Sedute <b>${dn}/${pl}</b></span><span>Media <b>${a!=null?f1(a)+" kg":"–"}</b></span>
+      ${dd!=null?`<span>Variazione <b class="${Math.abs(dd)<=0.4?"pos":"neg"}">${dd>=0?"+":"−"}${f1(Math.abs(dd))} kg</b></span>`:""}</div>
+    </div>`;
+  }
+  h += `</div><p class="note">Ritmo ideale: da +0,15 a +0,3 kg a settimana. Le regole per correggere le calorie sono nella Guida.</p>`;
+  document.getElementById("v-calendario").innerHTML = h;
+}
+
+function chartSVG(avgs){
+  const pts = [];
+  for (let i = 0; i < N; i++){ const x = num(dayData(i).weight); if (x) pts.push([i,x]); }
+  if (pts.length < 2) return `<p class="empty">Segna il peso al mattino nella vista Oggi: qui comparirà l’andamento giorno per giorno e la media settimanale.</p>`;
+  const ws = pts.map(p => p[1]);
+  let lo = Math.min(...ws), hi = Math.max(...ws);
+  if (hi - lo < 1.2){ const m = (hi+lo)/2; lo = m - .6; hi = m + .6; }
+  lo -= .2; hi += .2;
+  const W = 340, H = 160, pl = 34, pr = 8, pt = 10, pb = 24;
+  const X = i => pl + (i/(N-1)) * (W-pl-pr);
+  const Y = v => pt + (1 - (v-lo)/(hi-lo)) * (H-pt-pb);
+  let g = "";
+  for (let k = 0; k <= 3; k++){
+    const v = lo + (hi-lo)*k/3;
+    g += `<line class="gl" x1="${pl}" x2="${W-pr}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/><text class="lbl" x="${pl-5}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end">${f1(v)}</text>`;
+  }
+  for (let w = 0; w < 8; w++) g += `<text class="lbl" x="${X(w*7+3).toFixed(1)}" y="${H-6}" text-anchor="middle">S${w+1}</text>`;
+  g += pts.map(p => `<circle class="dt" cx="${X(p[0]).toFixed(1)}" cy="${Y(p[1]).toFixed(1)}" r="2.6"/>`).join("");
+  const ap = avgs.map((a,w) => a!=null ? [X(w*7+3), Y(a)] : null).filter(Boolean);
+  if (ap.length > 1) g += `<polyline class="avg" points="${ap.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ")}"/>`;
+  g += ap.map(p => `<circle class="avgd" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5"/>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Andamento del peso: punti giornalieri e media settimanale">${g}</svg>
+  <p class="muted" style="font-size:12px;margin:2px 4px 6px">Punti grigi: pesate giornaliere. Linea blu: media settimanale.</p>`;
+}
+
+/* ---------- Vista: Schede ---------- */
+let planTab = "ua";
+function renderSchede(){
+  const tabs = [["ua","Upper A"],["ub","Upper B"],["lg","Gambe"],["pk","Parkour"]];
+  let h = `<div class="planseg" role="group" aria-label="Scheda">${tabs.map(([k,l])=>`<button data-plan="${k}" aria-pressed="${k===planTab}" style="--c:var(--${k})">${l}</button>`).join("")}</div>`;
+  const when = {ua:"Martedì", ub:"Venerdì", lg:"Sabato", pk:"Lunedì e giovedì"}[planTab];
+  h += `<div class="planhead"><h1>${SESS[planTab].name}</h1><p>${when}. ${SESS[planTab].sub}${planTab!=="pk"?" Circa 60–75 minuti.":""}</p></div>`;
+  if (EX[planTab]){
+    h += `<ol class="exlist">` + EX[planTab].map(ex => `<li class="ex"><h3>${ex.n}</h3>
+      <div class="pcols"><span>Blocco 1 <b>${ex.b1}</b></span><span>Blocco 2 <b>${ex.n2 ? "con bilanciere, " : ""}${ex.b2||ex.b1}</b></span><span>Recupero <b>${ex.r}</b></span></div>
+      <p class="cue">${ex.c}</p></li>`).join("") + `</ol>`;
+  } else {
+    h += `<div class="tips"><ul>
+      <li>Le due sedute di parkour restano come le fai già: sono il tuo lavoro di potenza, salti e abilità.</li>
+      <li>Nel potenziamento a corpo libero non andare a cedimento su trazioni, dip e push-up: il giorno dopo c’è sempre una sessione di upper.</li>
+      <li>Core e mobilità possono stare qui: hollow body, L-sit, ponte, mobilità di polsi e caviglie.</li>
+      <li>Regola fissa: mai gambe con i pesi il giorno prima del parkour.</li>
+    </ul></div>`;
+  }
+  h += `<h2>Come funziona</h2>
+  <details class="card" open><summary>Le 8 settimane</summary><div class="body"><ol class="weeksq">
+    ${PHASES.map((p,k)=>`<li><span class="n">${k+1}</span><div><div class="d">${p.d}: ${p.t}</div><div class="muted" style="font-size:14px">${p.x}</div></div></li>`).join("")}
+  </ol></div></details>
+  <details class="card"><summary>RIR: quanto spingere</summary><div class="body">
+    <p>RIR significa ripetizioni in riserva: quante ripetizioni pulite potresti ancora fare a fine serie. Con RIR 2 ti fermi quando ne avresti ancora 2.</p>
+    <p>Ogni settimana ha il suo RIR, scritto sotto la data nella vista Oggi. Vale per l’ultima serie di ogni esercizio; le prime possono essere un filo più facili.</p>
+  </div></details>
+  <details class="card"><summary>Doppia progressione</summary><div class="body">
+    <p>Ogni esercizio ha un intervallo di ripetizioni, per esempio 5–7. Tieni lo stesso carico finché completi il massimo dell’intervallo in tutte le serie rispettando il RIR. A quel punto aumenti il carico e riparti dal minimo.</p>
+    <ul>
+      <li>Panca, military, rematore: +2,5 kg</li>
+      <li>Squat, stacco rumeno, hip thrust: +2,5–5 kg</li>
+      <li>Manubri: il disco successivo (circa +1–2 kg per lato)</li>
+      <li>Zavorra su trazioni e dip: +1,25–2,5 kg sulla catena</li>
+    </ul>
+    <p>Nella vista Oggi trovi sotto ogni esercizio cosa hai fatto l’ultima volta.</p>
+  </div></details>
+  <details class="card"><summary>Riscaldamento e recuperi</summary><div class="body">
+    <p>5 minuti di mobilità di spalle, anche e polsi. Sul primo esercizio multiarticolare: 50% × 8, 70% × 4, 85% × 2, poi le serie di lavoro. Negli esercizi successivi basta una serie leggera.</p>
+    <p>Rispetta i recuperi indicati: sui fondamentali 2–3 minuti servono davvero per spostare più carico.</p>
+  </div></details>
+  <details class="card"><summary>Perché è costruita così</summary><div class="body">
+    <p>Il parkour del lunedì e del giovedì è già molto lavoro di gambe esplosivo e di tirata a corpo libero, quindi i pesi coprono quello che il corpo libero fa meno bene: carichi pesanti e progressivi, deltoidi, braccia e catena posteriore.</p>
+    <p>Ogni muscolo della parte alta viene allenato due volte con i pesi, più il parkour. Le gambe una volta pesante, con nordic curl e calf per proteggere femorali e tendini nei salti.</p>
+  </div></details>`;
+  document.getElementById("v-schede").innerHTML = h;
+}
+
+/* ---------- Vista: Cibo ---------- */
+let foodMode = "train";
+function renderCibo(){
+  const tr = foodMode === "train";
+  const M = tr ? [["2.850","kcal"],["160 g","proteine"],["370 g","carboidrati"],["80 g","grassi"]] : [["2.500","kcal"],["155 g","proteine"],["300 g","carboidrati"],["80 g","grassi"]];
+  let h = `<div class="modeseg" role="group" aria-label="Tipo di giornata">
+    <button data-mode="train" aria-pressed="${tr}">Giorno di allenamento</button>
+    <button data-mode="rest" aria-pressed="${!tr}">Giorno di riposo</button>
+  </div>
+  <div class="macros">${M.map(([v,l])=>`<div class="macro"><b>${v}</b><span>${l}</span></div>`).join("")}</div>
+  <p class="note">Stime di partenza per 70 kg, lavoro sedentario e 5 sedute a settimana: circa 150–200 kcal sopra il mantenimento in media settimanale. È la bilancia a dire se vanno ritoccate.</p>
+
+  <h2>La giornata tipo</h2>`;
+  const meals = [
+    {t:"7:30", n:"Colazione", m:["80 g fiocchi d’avena","250 ml latte parzialmente scremato o bevanda di soia","1 banana","15 g burro d’arachidi 100%"], k:"≈ 610 kcal, 23 g di proteine",
+      a:["100 g pane integrale tostato, 2 uova strapazzate con 100 g di albume, 2 kiwi","250 g yogurt greco, 60 g avena o muesli senza zucchero, frutti di bosco, 15 g di noci"]},
+    {t:"10:30", n:"Spuntino in ufficio", m:["170 g yogurt greco 0–2%","20 g mandorle o noci","1 mela"], k:"≈ 300 kcal, 21 g di proteine",
+      a:["30 g di proteine in polvere nello shaker con acqua, 20 g di mandorle, 1 frutto (non serve il frigo)","150 g fiocchi di latte, 2 gallette di riso, 1 frutto"]},
+    {t:"13:00", n:"Pranzo preparato", m:["110 g riso basmati o pasta integrale (peso crudo)","150 g petto di pollo o tacchino (peso crudo)","almeno 200 g di verdure","15 g olio extravergine"], k:"≈ 735 kcal, 46 g di proteine",
+      a:["Riso basmati, pollo al curry (spezie e yogurt, non panna), zucchine","Pasta integrale al ragù di manzo magro 5% fatto in casa, insalata","Farro con pollo, 100 g di ceci, pomodorini e rucola","450 g patate al forno, tacchino alla piastra, broccoli","Riso venere con salmone o gamberi e verdure saltate"], at:"Rotazione per la settimana"},
+    tr ? {t:"16:30", n:"Pre-allenamento", m:["80 g pane integrale","20 g miele o marmellata","1 banana"], k:"≈ 365 kcal, soprattutto carboidrati: energia per la seduta",
+          a:["50 g gallette di riso con 20 g di miele e 1 frutto","150 g yogurt greco con 40 g di avena e miele (se ti alleni almeno 2 ore dopo)"]}
+       : {t:"16:30", n:"Spuntino del pomeriggio", m:["80 g pane integrale","1 scatoletta di tonno al naturale (80 g sgocciolato) o 2 uova sode","verdura cruda a piacere"], k:"≈ 290 kcal, 27 g di proteine",
+          a:["150 g fiocchi di latte con 2 gallette e pomodorini","50 g bresaola con pane integrale (al massimo una volta a settimana)"]},
+    tr ? {t:"19:45", n:"Dopo l’allenamento", m:["30 g proteine del siero in acqua o latte"], k:"≈ 120 kcal, 24 g di proteine. Se ceni entro un’ora puoi saltarlo e cenare direttamente.", a:null} : null,
+    {t:"20:30", n:"Cena", m:["150 g salmone (o un’altra proteina dalla tabella)", tr?"350 g patate":"175 g patate","verdure a volontà","10 g olio extravergine"], k: tr?"≈ 720 kcal, 40 g di proteine":"≈ 585 kcal, 37 g di proteine",
+      a:[`180 g manzo magro, ${tr?"100":"50"} g di pasta o riso (crudo), verdure`, `2 uova e 150 g di albume in frittata con verdure, ${tr?"120":"60"} g di pane integrale`, `200 g merluzzo, ${tr?"100":"50"} g di riso, verdure, 15 g di olio`, `Pasta e legumi: ${tr?"80":"50"} g di pasta, 150 g di legumi lessati, 30 g di parmigiano`]},
+    {t:"23:00", n:"Prima di dormire, facoltativo", m:["200 g yogurt greco o fiocchi di latte"], k:"Solo se a fine giornata sei sotto l’obiettivo di proteine.", a:null}
+  ].filter(Boolean);
+  h += meals.map(m => `<div class="meal"><div class="t">${m.t}</div><div class="box">
+    <h3>${m.n}</h3><ul>${m.m.map(x=>`<li>${x}</li>`).join("")}</ul><div class="k">${m.k}</div>
+    ${m.a ? `<details><summary>${m.at || "Alternative"}</summary><ul>${m.a.map(x=>`<li>${x}</li>`).join("")}</ul></details>` : ""}
+  </div></div>`).join("");
+
+  h += `<h2>Sostituzioni</h2>
+  <details class="card" open><summary>Proteine: circa 30 g</summary><div class="body"><div class="scroll"><table>
+    <tr><th>Alimento</th><th>Quantità</th></tr>
+    <tr><td>Petto di pollo o tacchino (crudo)</td><td>130 g</td></tr>
+    <tr><td>Manzo magro 5% (crudo)</td><td>150 g</td></tr>
+    <tr><td>Merluzzo o nasello</td><td>170 g</td></tr>
+    <tr><td>Salmone o sgombro (più grassi)</td><td>150 g</td></tr>
+    <tr><td>Tonno al naturale, sgocciolato</td><td>120 g</td></tr>
+    <tr><td>Uova + albume</td><td>2 uova + 200 g</td></tr>
+    <tr><td>Yogurt greco 0%</td><td>300 g</td></tr>
+    <tr><td>Fiocchi di latte</td><td>250 g</td></tr>
+    <tr><td>Proteine del siero</td><td>35 g</td></tr>
+  </table></div><p class="note">Legumi: 250 g lessati danno circa 20 g di proteine, abbinali a cereali o a un po’ di formaggio.</p></div></details>
+  <details class="card"><summary>Carboidrati: circa 80 g di riso crudo</summary><div class="body"><div class="scroll"><table>
+    <tr><th>Alimento</th><th>Quantità</th></tr>
+    <tr><td>Riso, pasta, farro, orzo (crudi)</td><td>80 g</td></tr>
+    <tr><td>Fiocchi d’avena</td><td>80 g</td></tr>
+    <tr><td>Pane integrale</td><td>110 g</td></tr>
+    <tr><td>Patate</td><td>350 g</td></tr>
+    <tr><td>Gallette di riso</td><td>75 g</td></tr>
+    <tr><td>Gnocchi di patate</td><td>180 g</td></tr>
+  </table></div></div></details>
+  <details class="card"><summary>Grassi: circa 10 g</summary><div class="body"><div class="scroll"><table>
+    <tr><th>Alimento</th><th>Quantità</th></tr>
+    <tr><td>Olio extravergine</td><td>10 g (un cucchiaio scarso)</td></tr>
+    <tr><td>Frutta secca</td><td>18 g</td></tr>
+    <tr><td>Burro d’arachidi 100%</td><td>20 g</td></tr>
+    <tr><td>Avocado</td><td>70 g</td></tr>
+  </table></div></div></details>
+
+  <h2>Regole di qualità</h2>
+  <div class="tips"><ul>
+    <li>Pesce 3 volte a settimana, di cui 2 pesce grasso (salmone, sgombro, sardine).</li>
+    <li>Legumi almeno 3 volte a settimana, anche nel pranzo o come contorno.</li>
+    <li>Carne rossa magra al massimo 2 volte. Bresaola o crudo sgrassato al massimo una volta. Salame, mortadella e würstel restano fuori.</li>
+    <li>Tonno in scatola al massimo 2–3 volte a settimana, per il mercurio.</li>
+    <li>Verdure a pranzo e a cena, 2–3 frutti al giorno, per arrivare ad almeno 30 g di fibre.</li>
+    <li>Una pizza a settimana va benissimo: tieni alte le proteine nel resto della giornata.</li>
+    <li>Fritti, dolci confezionati e bibite zuccherate: occasionali. Alcol poco e raro, peggiora sonno e recupero.</li>
+  </ul></div>
+
+  <h2>Meal prep</h2>
+  <div class="tips"><ul>
+    <li><b>Domenica</b>: pranzi di lunedì, martedì e mercoledì. Per esempio 330 g di riso crudo, 450 g di pollo, una teglia di verdure al forno, divisi in 3 contenitori. Rassoda 4 uova e porziona yogurt e frutta secca.</li>
+    <li><b>Mercoledì</b>: seconda infornata per giovedì, venerdì e sabato.</li>
+    <li>Pesa da crudo, poi dividi il cotto in parti uguali: non serve pesare ogni porzione.</li>
+    <li>Riso e carne cotti in frigo al massimo 3 giorni. Stendi il riso in un contenitore basso per raffreddarlo in fretta e mettilo in frigo entro un’ora.</li>
+    <li>Se in ufficio non c’è frigo, borsa termica con siberino.</li>
+  </ul></div>
+
+  <h2>Integratori</h2>
+  <div class="tips"><ul>
+    <li><b>Creatina monoidrato</b>: 3–5 g ogni giorno, anche a riposo; l’orario non conta. Nelle prime 2–3 settimane il peso sale di 0,5–1 kg per l’acqua nei muscoli: non è grasso.</li>
+    <li><b>Proteine del siero</b>: un alimento comodo, non obbligatorio. Usale quando non arrivi all’obiettivo.</li>
+    <li><b>Vitamina D e omega-3</b>: in inverno e con poco pesce possono servire, ma valutale con il medico, magari dopo un esame del sangue.</li>
+  </ul></div>
+  <p class="note">Indicazioni generali per una persona sana, non sostituiscono un nutrizionista o un medico.</p>`;
+  document.getElementById("v-cibo").innerHTML = h;
+}
+
+/* ---------- Vista: Guida ---------- */
+let resetArmed = false;
+function renderGuida(){
+  document.getElementById("v-guida").innerHTML = `
+  <h2>Misurare</h2>
+  <div class="tips"><ul>
+    <li><b>Peso</b>: ogni mattina, o almeno 4 volte a settimana, a digiuno dopo il bagno. Conta solo la media settimanale, che il calendario calcola da solo.</li>
+    <li><b>Vita</b>: domenica mattina, all’altezza dell’ombelico, pancia rilassata. È il miglior allarme per l’addome.</li>
+    <li><b>Foto</b>: addome ogni 2 settimane, stessa luce e stessa ora.</li>
+    <li><b>Ritmo giusto</b>: da +0,15 a +0,3 kg a settimana, quindi circa 1–2 kg in 8 settimane, di cui una parte è acqua della creatina.</li>
+  </ul></div>
+
+  <h2>Correggere le calorie</h2>
+  <details class="card" open><summary>Ogni 2 settimane, non prima</summary><div class="body"><ul>
+    <li>La media sale meno di 0,1 kg a settimana e la vita è ferma: <b>+150 kcal</b> al giorno, per esempio 40 g di riso crudo in più a pranzo.</li>
+    <li>La media sale più di 0,4 kg a settimana, oppure la vita cresce di 1 cm in 2 settimane: <b>−150 kcal</b>, per esempio 15 g di olio in meno.</li>
+    <li>Sei nel range e i carichi salgono: non toccare niente.</li>
+    <li>Carichi fermi per 2 sedute di fila su più esercizi: controlla prima sonno e cibo, poi anticipa la settimana di scarico.</li>
+  </ul></div></details>
+
+  <h2>Giornata da programmatore</h2>
+  <div class="tips"><ul>
+    <li>Alzati ogni 45–60 minuti per 2–3 minuti: acqua, una rampa di scale, mobilità di anche e torace. Puoi legarlo al ritmo del lavoro, per esempio a ogni commit o dopo ogni riunione.</li>
+    <li>Se puoi, 10 minuti di camminata dopo pranzo.</li>
+    <li>Bottiglia da un litro sulla scrivania, da finire tre volte.</li>
+    <li>Il piano tiene già conto del lavoro seduto: se un giorno cammini molto di più, puoi aggiungere un frutto o una porzione di carboidrati.</li>
+  </ul></div>
+
+  <h2>Sonno</h2>
+  <div class="tips"><ul>
+    <li>7,5–9 ore. È lì che il muscolo cresce davvero.</li>
+    <li>Ultimo caffè entro le 15–16.</li>
+    <li>Nell’ultima mezz’ora niente schermi da lavoro: è il momento giusto per lo yogurt serale e la lettura.</li>
+  </ul></div>
+
+  <h2>Parkour e pesi insieme</h2>
+  <div class="tips"><ul>
+    <li>Lunedì PK, martedì Upper A, giovedì PK, venerdì Upper B: nel potenziamento del parkour niente cedimento su trazioni e dip.</li>
+    <li>Sabato Gambe, domenica riposo, lunedì PK: le gambe hanno 48 ore prima dei salti. Per questo lo squat resta sempre a 1–2 ripetizioni dal cedimento.</li>
+    <li>Se devi spostare una seduta, l’unica regola fissa è: mai gambe il giorno prima del parkour. Dalla vista Oggi puoi cambiare la sessione di un giorno.</li>
+  </ul></div>
+
+  <h2>Le feste</h2>
+  <div class="tips"><ul>
+    <li>La settimana 5 (21–27 dicembre) è di scarico e cade a Natale: se salti una seduta non succede niente.</li>
+    <li>Il 25 dicembre e il 1° gennaio sono venerdì, giorno di Upper B: sposta la seduta o saltala.</li>
+    <li>Pranzi e cenoni: goditeli, tieni alte le proteine negli altri pasti e non compensare digiunando il giorno dopo.</li>
+    <li>Dopo una cena abbondante il peso può salire di 1–2 kg in un giorno: è acqua e sale. Guarda la media della settimana dopo.</li>
+  </ul></div>
+
+  <h2>I tuoi dati</h2>
+  <div class="tips">
+    <p style="margin:0 0 8px">${remoteRef ? "Tutto quello che segni si salva da solo nel tuo account ed è visibile solo a te: puoi aprire la pagina dal telefono o dal computer." : "Tutto quello che segni si salva da solo nel browser in cui apri la pagina: usa sempre lo stesso browser sullo stesso telefono, e non cancellare i dati di navigazione."}</p>
+    <button class="danger" data-act="reset">${resetArmed ? "Tocca di nuovo per cancellare tutto" : "Cancella tutti i dati segnati"}</button>
+  </div>`;
+}
+
+/* ---------- Navigazione ed eventi ---------- */
+const VIEWS = ["oggi","calendario","schede","cibo","guida"];
+let current = "oggi";
+const RENDER = {oggi:renderOggi, calendario:renderCal, schede:renderSchede, cibo:renderCibo, guida:renderGuida};
+function renderCurrent(){ RENDER[current](); }
+function show(v, scroll){
+  current = v;
+  VIEWS.forEach(x => document.getElementById("v-"+x).classList.toggle("on", x === v));
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.view === v ? "page" : "false"));
+  renderCurrent();
+  if (scroll !== false) window.scrollTo(0, 0);
+}
+
+document.addEventListener("click", ev => {
+  const t = ev.target.closest("[data-view],[data-act],[data-food],[data-tog],[data-sess],[data-go],[data-plan],[data-mode]");
+  if (!t) return;
+  const ds = t.dataset;
+  if (ds.view){ show(ds.view); return; }
+  if (ds.go){ sel = +ds.go; show("oggi"); return; }
+  if (ds.plan){ planTab = ds.plan; renderSchede(); return; }
+  if (ds.mode){ foodMode = ds.mode; renderCibo(); return; }
+  if (ds.act === "prev" && sel > 0){ sel--; renderOggi(); return; }
+  if (ds.act === "next" && sel < N-1){ sel++; renderOggi(); return; }
+  if (ds.act === "today"){ sel = Math.min(Math.max(TODAY,0),N-1); renderOggi(); return; }
+  if (ds.act === "reset"){
+    if (!resetArmed){ resetArmed = true; renderGuida(); setTimeout(()=>{ resetArmed = false; if (current==="guida") renderGuida(); }, 4000); return; }
+    resetArmed = false; state = {v:1, days:{}, weeks:{}, updatedAt:0}; persist(); renderGuida(); return;
+  }
+  const e = dayData(sel, true);
+  if (ds.food){ e.food = String(e.food) === ds.food ? null : ds.food; persist(); renderOggiKeepScroll(); return; }
+  if (ds.tog){ e[ds.tog] = !e[ds.tog]; persist(); t.setAttribute("aria-pressed", String(!!e[ds.tog])); return; }
+  if (ds.sess){ e.sess = ds.sess === WEEKLY[sel % 7] ? null : ds.sess; if (ds.sess === "rest") e.done = false; persist(); renderOggiKeepScroll(); return; }
+});
+function renderOggiKeepScroll(){ const y = window.scrollY; renderOggi(); window.scrollTo(0, y); }
+
+document.addEventListener("input", ev => {
+  const t = ev.target, ds = t.dataset;
+  if (ds.log){ const e = dayData(sel, true); e.log = e.log || {}; if (t.value.trim()) e.log[ds.log] = t.value; else delete e.log[ds.log]; persist(); return; }
+  if (ds.waist != null){ state.weeks[ds.waist] = state.weeks[ds.waist] || {}; state.weeks[ds.waist].waist = t.value.trim(); persist(); return; }
+  if (ds.f === "weight" || ds.f === "note"){ const e = dayData(sel, true); e[ds.f] = t.value; persist(); return; }
+});
+document.addEventListener("change", ev => {
+  const t = ev.target;
+  if (t.dataset.f === "done"){ const e = dayData(sel, true); e.done = t.checked; persist(); }
+});
+
+/* ---------- Avvio ---------- */
+const local = loadLocal();
+if (local) state = local;
+const h0 = (location.hash || "").slice(1);
+show(VIEWS.includes(h0) ? h0 : "oggi", false);
+setSync("local");
+initRemote();
+</script>
+</body>
+</html>
