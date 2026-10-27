@@ -13,3 +13,6 @@ captures/
 keystore.properties
 *.jks
 *.keystore
+
+# APK copiati a mano
+*.apk
