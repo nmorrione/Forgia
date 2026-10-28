@@ -19,6 +19,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import io.github.nmorrione.forgia.timer.TimerEngine
+import io.github.nmorrione.forgia.ui.components.LocalOverlayPadding
+import io.github.nmorrione.forgia.ui.components.TimerBar
+import io.github.nmorrione.forgia.ui.components.TimerBarSpace
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -51,8 +61,25 @@ fun ForgiaApp(vm: AppViewModel) {
         val route = vm.stack.lastOrNull()
         BackHandler(enabled = route != null) { vm.pop() }
         BackHandler(enabled = route == null && vm.tab != Tab.OGGI) { vm.tab = Tab.OGGI }
+        // Solo "attivo sì/no": la barra del timer legge da sola il tempo, senza ridisegnare tutta l'app.
+        val timerActive by remember { TimerEngine.state.map { it.active }.distinctUntilChanged() }
+            .collectAsState(initial = TimerEngine.state.value.active)
         Surface(color = Pal.bg, modifier = Modifier.fillMaxSize()) {
-            if (route != null) EditorHost(route, vm) else MainTabs(vm)
+            if (route != null) {
+                Box(Modifier.fillMaxSize()) {
+                    CompositionLocalProvider(LocalOverlayPadding provides if (timerActive) TimerBarSpace else 0.dp) {
+                        EditorHost(route, vm)
+                    }
+                    if (timerActive) {
+                        TimerBar(
+                            onOpen = { vm.stack.clear(); vm.tab = Tab.TIMER },
+                            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
+                        )
+                    }
+                }
+            } else {
+                MainTabs(vm, timerActive)
+            }
         }
     }
 }
@@ -76,7 +103,7 @@ private fun EditorHost(route: Route, vm: AppViewModel) {
 }
 
 @Composable
-private fun MainTabs(vm: AppViewModel) {
+private fun MainTabs(vm: AppViewModel, timerActive: Boolean) {
     val p = Pal
     Column(Modifier.fillMaxSize()) {
         // Intestazione
@@ -91,14 +118,19 @@ private fun MainTabs(vm: AppViewModel) {
             }
         }
         Box(Modifier.weight(1f).fillMaxWidth()) {
-            when (vm.tab) {
-                Tab.OGGI -> TodayScreen(vm)
-                Tab.CALENDARIO -> CalendarScreen(vm)
-                Tab.SCHEDE -> PlansScreen(vm)
-                Tab.TIMER -> TimerScreen(vm)
-                Tab.CIBO -> FoodScreen(vm)
-                Tab.GUIDA -> GuideScreen(vm)
+            // Nella sezione Timer il timer è già a tutto schermo: la barra serve nelle altre.
+            val showBar = timerActive && vm.tab != Tab.TIMER
+            CompositionLocalProvider(LocalOverlayPadding provides if (showBar) TimerBarSpace else 0.dp) {
+                when (vm.tab) {
+                    Tab.OGGI -> TodayScreen(vm)
+                    Tab.CALENDARIO -> CalendarScreen(vm)
+                    Tab.SCHEDE -> PlansScreen(vm)
+                    Tab.TIMER -> TimerScreen(vm)
+                    Tab.CIBO -> FoodScreen(vm)
+                    Tab.GUIDA -> GuideScreen(vm)
+                }
             }
+            if (showBar) TimerBar(onOpen = { vm.tab = Tab.TIMER }, modifier = Modifier.align(Alignment.BottomCenter))
         }
         // Barra delle sezioni
         Column(Modifier.fillMaxWidth().background(p.surface).navigationBarsPadding()) {

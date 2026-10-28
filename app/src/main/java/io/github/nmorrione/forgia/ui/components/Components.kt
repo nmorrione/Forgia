@@ -37,6 +37,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,6 +61,9 @@ import io.github.nmorrione.forgia.ui.theme.Pal
 import io.github.nmorrione.forgia.ui.theme.Small
 import io.github.nmorrione.forgia.ui.theme.cond
 
+/** Spazio in fondo occupato dalla barra del timer, se visibile: il contenuto ci scorre sopra. */
+val LocalOverlayPadding = staticCompositionLocalOf { 0.dp }
+
 /** Colonna scorrevole larga al massimo 560dp, come il layout dell'HTML. */
 @Composable
 fun ScreenColumn(
@@ -75,7 +79,7 @@ fun ScreenColumn(
                 .imePadding()
                 .verticalScroll(scroll)
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 40.dp),
+                .padding(bottom = 40.dp + LocalOverlayPadding.current),
             content = content,
         )
     }

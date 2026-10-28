@@ -52,6 +52,15 @@ enum class TimerSound {
     ALARM,
 }
 
+/** Cosa suona alla fine del timer classico. */
+@Serializable
+enum class EndSound {
+    /** Beep brevi a ripetizione, come il timer dell'Orologio. */
+    BEEPER,
+    /** La suoneria della sveglia di sistema. */
+    SYSTEM_ALARM,
+}
+
 @Serializable
 data class IntervalConfig(
     val name: String = "Circuito",
@@ -73,6 +82,8 @@ data class TimerSettings(
     val presets: List<IntervalConfig> = Defaults.intervalPresets(),
     val sound: TimerSound = TimerSound.MEDIA,
     val vibrate: Boolean = true,
+    /** Campo aggiunto nella 0.5.0: con il valore predefinito i dati vecchi si leggono senza migrazione. */
+    val endSound: EndSound = EndSound.BEEPER,
 )
 
 /* ---------- Programma di allenamento ---------- */

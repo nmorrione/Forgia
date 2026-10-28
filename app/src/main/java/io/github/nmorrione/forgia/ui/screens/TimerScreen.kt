@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import io.github.nmorrione.forgia.data.EndSound
 import io.github.nmorrione.forgia.data.IntervalConfig
 import io.github.nmorrione.forgia.data.TimerSettings
 import io.github.nmorrione.forgia.data.TimerSound
@@ -54,6 +55,7 @@ import io.github.nmorrione.forgia.timer.TimerKind
 import io.github.nmorrione.forgia.timer.TimerState
 import io.github.nmorrione.forgia.timer.fmtClock
 import io.github.nmorrione.forgia.ui.AppViewModel
+import io.github.nmorrione.forgia.ui.Tab
 import io.github.nmorrione.forgia.ui.components.Btn
 import io.github.nmorrione.forgia.ui.components.CardBox
 import io.github.nmorrione.forgia.ui.components.Chip
@@ -97,7 +99,7 @@ fun TimerScreen(vm: AppViewModel) {
 
     fun setTimer(f: (TimerSettings) -> TimerSettings) = vm.update { it.copy(timer = f(it.timer)) }
 
-    ScreenColumn {
+    ScreenColumn(scroll = vm.scroll(Tab.TIMER)) {
         if (st.active) RunningTimer(st) else TimerSetup(vm, settings, ::setTimer, ::askNotifications)
     }
 }
@@ -134,6 +136,12 @@ private fun TimerSetup(
                 help = "Usa il volume della sveglia. Spento, i beep seguono il volume multimediale e si mescolano alla musica.",
             ) { v -> setTimer { it.copy(sound = if (v) TimerSound.ALARM else TimerSound.MEDIA) } }
             SwitchRow("Vibrazione", settings.vibrate) { v -> setTimer { it.copy(vibrate = v) } }
+            Text("Fine del timer classico", style = Body.copy(fontWeight = FontWeight.SemiBold), modifier = Modifier.padding(top = 8.dp))
+            ChipRow {
+                Chip("Cicalino", settings.endSound == EndSound.BEEPER) { setTimer { it.copy(endSound = EndSound.BEEPER) } }
+                Chip("Sveglia di sistema", settings.endSound == EndSound.SYSTEM_ALARM) { setTimer { it.copy(endSound = EndSound.SYSTEM_ALARM) } }
+            }
+            Muted("Suona sempre con il volume della sveglia, finché non lo fermi (al massimo un minuto).", Modifier.padding(top = 6.dp), Tiny)
             LinkBtn("Prova i suoni") { TimerEngine.preview(ctx, settings) }
         }
         Muted(
@@ -245,7 +253,11 @@ private fun CountdownSetup(seconds: Int, onChange: (Int) -> Unit, onStart: () ->
         }
     }
     Btn("Avvia", Modifier.padding(top = 12.dp).fillMaxWidth(), filled = true, onClick = onStart)
-    Muted("Alla fine suona la sveglia di sistema finché non la fermi (al massimo un minuto).", Modifier.padding(top = 8.dp), Tiny)
+    Muted(
+        "Alla fine suona finché non lo fermi, da qui o dalla barra del timer in fondo a ogni schermata. " +
+            "Sotto ogni esercizio, in Oggi, c’è anche il pulsante per far partire il recupero.",
+        Modifier.padding(top = 8.dp), Tiny,
+    )
 }
 
 /* ---------- Timer a intervalli ---------- */

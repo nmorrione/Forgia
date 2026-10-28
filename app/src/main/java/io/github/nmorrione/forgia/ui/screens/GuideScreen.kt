@@ -24,6 +24,7 @@ import io.github.nmorrione.forgia.data.Defaults
 import io.github.nmorrione.forgia.data.Store
 import io.github.nmorrione.forgia.data.TrainingLog
 import io.github.nmorrione.forgia.ui.AppViewModel
+import io.github.nmorrione.forgia.ui.Tab
 import io.github.nmorrione.forgia.ui.Route
 import io.github.nmorrione.forgia.ui.SectionKind
 import io.github.nmorrione.forgia.ui.components.Btn
@@ -65,7 +66,7 @@ fun GuideScreen(vm: AppViewModel) {
         }
     }
 
-    ScreenColumn {
+    ScreenColumn(scroll = vm.scroll(Tab.GUIDA)) {
         vm.data.guide.forEach { sec ->
             H2(sec.title)
             CardBox(padding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 8.dp)) { RichText(sec.body) }

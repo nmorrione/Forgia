@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import io.github.nmorrione.forgia.logic.Schedule
 import io.github.nmorrione.forgia.ui.AppViewModel
+import io.github.nmorrione.forgia.ui.Tab
 import io.github.nmorrione.forgia.ui.Route
 import io.github.nmorrione.forgia.ui.SectionKind
 import io.github.nmorrione.forgia.ui.components.CardBox
@@ -65,7 +66,7 @@ fun PlansScreen(vm: AppViewModel) {
     val cur = tabs.firstOrNull { it.id == vm.planTab } ?: tabs.firstOrNull()
     val p = Pal
 
-    ScreenColumn {
+    ScreenColumn(scroll = vm.scroll(Tab.SCHEDE)) {
         if (tabs.isNotEmpty()) {
             BoxWithConstraints(Modifier.fillMaxWidth().padding(top = 12.dp)) {
                 val gap = 6.dp

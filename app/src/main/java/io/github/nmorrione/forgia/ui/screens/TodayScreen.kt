@@ -18,6 +18,8 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +38,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import io.github.nmorrione.forgia.data.DayType
+import io.github.nmorrione.forgia.logic.parseRestSeconds
+import io.github.nmorrione.forgia.timer.TimerEngine
+import io.github.nmorrione.forgia.timer.TimerKind
+import io.github.nmorrione.forgia.timer.fmtClock
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import io.github.nmorrione.forgia.data.SetEntry
 import io.github.nmorrione.forgia.logic.It
 import io.github.nmorrione.forgia.logic.PrevSets
@@ -47,6 +56,7 @@ import io.github.nmorrione.forgia.logic.capitalize
 import io.github.nmorrione.forgia.logic.fmtInt
 import io.github.nmorrione.forgia.logic.fmtNum
 import io.github.nmorrione.forgia.ui.AppViewModel
+import io.github.nmorrione.forgia.ui.Tab
 import io.github.nmorrione.forgia.ui.Route
 import io.github.nmorrione.forgia.ui.components.Banner
 import io.github.nmorrione.forgia.ui.components.Btn
@@ -94,7 +104,19 @@ fun TodayScreen(vm: AppViewModel) {
     val p = Pal
     val c = sessionColor(sess.color)
 
-    ScreenColumn {
+    val ctx = LocalContext.current
+    // Il recupero non parte se c'è un circuito a intervalli in corso: lo interromperebbe.
+    val intervalRunning by remember {
+        TimerEngine.state.map { it.active && it.kind == TimerKind.INTERVAL }.distinctUntilChanged()
+    }.collectAsState(initial = false)
+
+    // Cambiando sezione la posizione resta; cambiando giorno si riparte dall'inizio.
+    LaunchedEffect(sel) {
+        if (vm.todayScrollDay != null && vm.todayScrollDay != sel) vm.scroll(Tab.OGGI).scrollTo(0)
+        vm.todayScrollDay = sel
+    }
+
+    ScreenColumn(scroll = vm.scroll(Tab.OGGI)) {
         // Navigazione tra i giorni
         Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             RoundIcon("‹", enabled = sel > first) { vm.selectedDay = sel - 1 }
@@ -213,6 +235,9 @@ fun TodayScreen(vm: AppViewModel) {
                     entries = e.sets[r.logKey].orEmpty(),
                     prev = t.lastSets(r.logKey, date),
                     fieldKey = "$key/${r.logKey}",
+                    onRest = if (intervalRunning) null else { sec ->
+                        TimerEngine.startCountdown(ctx, sec, data.timer, label = "Recupero · ${r.name}")
+                    },
                 ) { list ->
                     vm.updateDay(key) { d ->
                         val empty = list.all { it.isEmpty } && list.size <= r.sets
@@ -333,6 +358,8 @@ private fun ExerciseLogCard(
     entries: List<SetEntry>,
     prev: PrevSets?,
     fieldKey: String,
+    /** Fa partire il timer di recupero; null se non si può (circuito a intervalli in corso). */
+    onRest: ((Int) -> Unit)?,
     onChange: (List<SetEntry>) -> Unit,
 ) {
     val p = Pal
@@ -387,6 +414,13 @@ private fun ExerciseLogCard(
             }
             if (entries.size > r.sets) LinkBtn("− serie") { onChange(entries.dropLast(1)) }
             if (prev != null && entries.all { it.isEmpty }) LinkBtn("Copia l’ultima volta") { onChange(prev.sets) }
+        }
+        // Recupero tra le serie: parte il timer classico con il tempo della scheda
+        val restSec = parseRestSeconds(r.rest)
+        if (restSec != null && onRest != null) {
+            Btn("⏱  Avvia recupero ${fmtClock(restSec * 1000L)}", Modifier.padding(top = 6.dp, bottom = 4.dp).fillMaxWidth()) {
+                onRest(restSec)
+            }
         }
         Text(
             buildAnnotatedString {

@@ -88,7 +88,7 @@ fun CalendarScreen(vm: AppViewModel) {
     val lastW = avgs.indexOfLast { it != null }
     val delta = if (firstW >= 0 && lastW > firstW) avgs[lastW]!! - avgs[firstW]!! else null
 
-    ScreenColumn {
+    ScreenColumn(scroll = vm.scroll(Tab.CALENDARIO)) {
         // Fine ciclo: riepilogo e prossimo ciclo
         if (s.isFinished(today)) {
             CardBox(Modifier.padding(top = 12.dp)) {

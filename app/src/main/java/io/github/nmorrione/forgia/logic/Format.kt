@@ -53,4 +53,17 @@ fun signed2(v: Double): String = (if (v >= 0) "+" else "−") + fmtNum(abs(v))
 
 fun parseNum(s: String): Double? = s.trim().replace(',', '.').toDoubleOrNull()
 
+/**
+ * Secondi di recupero da un testo della scheda: "3 min" → 180, "2–3 min" → 120 (il minimo),
+ * "60–90 s" → 60, "1:30" → 90, "90 s dopo la coppia" → 90; "superserie" → null.
+ */
+fun parseRestSeconds(s: String): Int? {
+    val t = s.lowercase()
+    Regex("""(\d+):(\d{2})""").find(t)?.let { return it.groupValues[1].toInt() * 60 + it.groupValues[2].toInt() }
+    val m = Regex("""(\d+(?:[.,]\d+)?)\s*(?:[–-]\s*\d+(?:[.,]\d+)?)?\s*(min|m\b|s\b|sec)""").find(t) ?: return null
+    val v = m.groupValues[1].replace(',', '.').toDouble()
+    val sec = if (m.groupValues[2].startsWith("m")) v * 60 else v
+    return sec.roundToInt().takeIf { it > 0 }
+}
+
 fun capitalize(s: String) = s.replaceFirstChar { it.uppercase() }

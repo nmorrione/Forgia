@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
+import io.github.nmorrione.forgia.data.EndSound
 import io.github.nmorrione.forgia.data.IntervalConfig
 import io.github.nmorrione.forgia.data.TimerSettings
 import io.github.nmorrione.forgia.data.TimerSound
@@ -49,12 +50,16 @@ object TimerEngine {
     private var alarm: AlarmPlayer? = null
     private var buzzer: Buzzer? = null
     private var vibrate = true
+    private var endSound = EndSound.BEEPER
+    /** Il cicalino di fine timer: sempre sul volume della sveglia, come l'Orologio. */
+    private var ringBeeper: Beeper? = null
 
     private fun now() = SystemClock.elapsedRealtime()
 
-    fun startCountdown(ctx: Context, seconds: Int, s: TimerSettings) = start(ctx, s) {
+    /** [label] compare nella barra del timer e nella notifica, es. "Recupero · Panca piana". */
+    fun startCountdown(ctx: Context, seconds: Int, s: TimerSettings, label: String = "Timer") = start(ctx, s) {
         kind = TimerKind.COUNTDOWN
-        title = "Timer"
+        title = label
         rounds = 0
         sets = 0
         listOf(Step(Phase.COUNTDOWN, seconds.coerceAtLeast(1) * 1000L))
@@ -80,6 +85,26 @@ object TimerEngine {
             b.play(Cue.FINISH)
             delay(3000)
             b.release()
+            // Il suono di fine timer, sempre sul volume della sveglia
+            if (s.endSound == EndSound.BEEPER) {
+                val r = Beeper(alarmChannel = true)
+                repeat(2) { r.play(Cue.ALARM); delay(ALARM_CYCLE_MS) }
+                r.release()
+            }
+        }
+    }
+
+    /** Aggiunge o toglie tempo al timer classico (pulsanti ±15 s). */
+    fun addTime(deltaMs: Long) {
+        scope.launch {
+            if (kind != TimerKind.COUNTDOWN || !state.value.running) return@launch
+            val paused = pausedRemaining >= 0
+            val rem = if (paused) pausedRemaining else stepEnd - now()
+            val newRem = (rem + deltaMs).coerceAtLeast(1000)
+            // Anche la durata del tratto cambia: così la barra di avanzamento e la notifica restano coerenti
+            steps = steps.toMutableList().also { it[idx] = it[idx].copy(ms = (it[idx].ms + newRem - rem).coerceAtLeast(newRem)) }
+            if (paused) pausedRemaining = newRem else stepEnd = now() + newRem
+            publish(newRem)
         }
     }
 
@@ -98,6 +123,7 @@ object TimerEngine {
                 }
             }
             vibrate = s.vibrate
+            endSound = s.endSound
             beeper = Beeper(s.sound == TimerSound.ALARM)
             buzzer = Buzzer(app)
             pausedRemaining = -1
@@ -153,11 +179,7 @@ object TimerEngine {
     private fun shutdown() {
         loop?.cancel()
         aux?.cancel()
-        alarm?.stop()
-        alarm = null
-        buzzer?.cancel()
-        beeper?.release()
-        beeper = null
+        silence()
         pausedRemaining = -1
     }
 
@@ -229,28 +251,38 @@ object TimerEngine {
     private fun ring() {
         loop?.cancel()
         _state.value = _state.value.copy(phase = Phase.RINGING, remainingMs = 0, totalRemainingMs = 0, paused = false)
-        val player = AlarmPlayer(app)
-        alarm = player
-        val ok = player.start()
+        // Cicalino da timer, oppure la sveglia di sistema; se la sveglia non parte, il cicalino.
+        val systemOk = endSound == EndSound.SYSTEM_ALARM && AlarmPlayer(app).let { player ->
+            alarm = player
+            player.start()
+        }
         if (vibrate) buzzer?.pattern(longArrayOf(0, 600, 400), repeat = true)
         aux = scope.launch {
-            // Se la sveglia di sistema non parte, suoniamo i nostri beep.
-            if (!ok) {
-                repeat(20) {
-                    beeper?.play(Cue.FINISH)
-                    delay(3000)
-                }
-            } else {
+            val until = now() + 60_000
+            if (systemOk) {
                 delay(60_000)
+            } else {
+                val r = Beeper(alarmChannel = true)
+                ringBeeper = r
+                while (now() < until) {
+                    r.play(Cue.ALARM)
+                    delay(ALARM_CYCLE_MS)
+                }
             }
             // Dopo un minuto smette da sola.
-            alarm?.stop()
-            alarm = null
-            buzzer?.cancel()
-            beeper?.release()
-            beeper = null
+            silence()
             _state.value = _state.value.copy(phase = Phase.DONE)
         }
+    }
+
+    private fun silence() {
+        alarm?.stop()
+        alarm = null
+        ringBeeper?.release()
+        ringBeeper = null
+        buzzer?.cancel()
+        beeper?.release()
+        beeper = null
     }
 
     private fun publish(rem: Long) {

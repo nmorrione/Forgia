@@ -1,6 +1,7 @@
 package io.github.nmorrione.forgia.ui
 
 import android.app.Application
+import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +59,13 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     var foodDay by mutableStateOf(DayType.TRAIN)
     var timerIntervals by mutableStateOf(false)
     val stack = mutableStateListOf<Route>()
+
+    /** Posizione di scorrimento di ogni sezione: resta quando passi da una all'altra. */
+    private val scrolls = mutableMapOf<Tab, ScrollState>()
+    fun scroll(tab: Tab): ScrollState = scrolls.getOrPut(tab) { ScrollState(0) }
+
+    /** Il giorno mostrato l'ultima volta in Oggi: se cambia, si torna in cima. */
+    var todayScrollDay: Int? = null
 
     private var saveJob: Job? = null
 

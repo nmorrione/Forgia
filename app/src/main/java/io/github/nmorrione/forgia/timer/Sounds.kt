@@ -16,7 +16,10 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
-enum class Cue { TICK, WORK, REST, FINISH }
+enum class Cue { TICK, WORK, REST, FINISH, ALARM }
+
+/** Durata di un giro del cicalino (quattro beep e una pausa), per ripeterlo a tempo. */
+const val ALARM_CYCLE_MS = 1100L
 
 /**
  * Beep sintetizzati: un'unica traccia audio aperta per tutta la durata del timer,
@@ -88,6 +91,8 @@ class Beeper(alarmChannel: Boolean) {
                     Note(659.3, 150, 40), Note(830.6, 150, 40), Note(987.8, 150, 40), Note(1318.5, 380, 160),
                     Note(659.3, 150, 40), Note(830.6, 150, 40), Note(987.8, 150, 40), Note(1318.5, 900),
                 )
+                // Cicalino da timer: quattro beep acuti e brevi, poi una pausa (in tutto ALARM_CYCLE_MS)
+                Cue.ALARM -> List(4) { i -> Note(1975.5, 80, if (i < 3) 70 else 510) }
             }
             synth(notes)
         }

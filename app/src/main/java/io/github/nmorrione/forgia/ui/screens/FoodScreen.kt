@@ -34,6 +34,7 @@ import io.github.nmorrione.forgia.logic.ScaleResult
 import io.github.nmorrione.forgia.logic.fmtInt
 import io.github.nmorrione.forgia.logic.fmtNum
 import io.github.nmorrione.forgia.ui.AppViewModel
+import io.github.nmorrione.forgia.ui.Tab
 import io.github.nmorrione.forgia.ui.Route
 import io.github.nmorrione.forgia.ui.SectionKind
 import io.github.nmorrione.forgia.ui.components.Btn
@@ -68,7 +69,7 @@ fun FoodScreen(vm: AppViewModel) {
     var preview by remember { mutableStateOf<ScaleResult?>(null) }
     val p = Pal
 
-    ScreenColumn {
+    ScreenColumn(scroll = vm.scroll(Tab.CIBO)) {
         Row(Modifier.padding(top = 12.dp, bottom = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Btn("Allenamento", Modifier.weight(1f), filled = tr) { vm.foodDay = DayType.TRAIN }
             Btn("Riposo", Modifier.weight(1f), filled = !tr) { vm.foodDay = DayType.REST }
