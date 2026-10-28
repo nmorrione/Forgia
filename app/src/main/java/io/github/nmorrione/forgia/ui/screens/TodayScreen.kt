@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -244,6 +247,14 @@ fun TodayScreen(vm: AppViewModel) {
                         d.copy(sets = if (empty) d.sets - r.logKey else d.sets + (r.logKey to list))
                     }
                 }
+                // Tra un esercizio e il successivo: il recupero per cambiare esercizio
+                if (idx < sess.exercises.lastIndex) {
+                    val next = s.resolve(sess.exercises[idx + 1], w).name
+                    val sec = data.program.changeRest(sess)
+                    ChangeRestRow(next, sec, enabled = !intervalRunning && sec > 0) {
+                        TimerEngine.startCountdown(ctx, sec, data.timer, label = "Cambio · poi $next")
+                    }
+                }
             }
         }
 
@@ -342,6 +353,44 @@ private fun MeasureField(
         }
         Muted(help, Modifier.padding(top = 8.dp), Tiny)
     }
+}
+
+/** Tra due esercizi: pulsante per il recupero di cambio, con l'esercizio che viene dopo. */
+@Composable
+private fun ChangeRestRow(next: String, seconds: Int, enabled: Boolean, onStart: () -> Unit) {
+    val p = Pal
+    val shape = RoundedCornerShape(999.dp)
+    Row(
+        Modifier.fillMaxWidth().padding(top = 2.dp, bottom = 4.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.weight(1f).height(1.dp).background(p.line))
+        Row(
+            Modifier
+                .padding(horizontal = 8.dp)
+                .widthIn(max = 320.dp)
+                .clip(shape)
+                .background(p.surface2)
+                .border(1.dp, p.line, shape)
+                .clickable(enabled = enabled, onClick = onStart)
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                if (seconds > 0) "⏱  Cambio esercizio ${fmtClock(seconds * 1000L)}" else "Cambio esercizio",
+                style = Small.copy(fontWeight = FontWeight.SemiBold),
+                color = if (enabled) p.ink else p.muted,
+                maxLines = 1,
+            )
+        }
+        Box(Modifier.weight(1f).height(1.dp).background(p.line))
+    }
+    Text(
+        "Poi: $next",
+        style = Tiny, color = p.muted, textAlign = TextAlign.Center, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+    )
 }
 
 private fun setAt(list: List<SetEntry>, i: Int, v: SetEntry): List<SetEntry> {

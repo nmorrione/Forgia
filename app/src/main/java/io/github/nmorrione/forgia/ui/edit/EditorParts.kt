@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.nmorrione.forgia.logic.fmtNum
+import io.github.nmorrione.forgia.timer.fmtClock
 import io.github.nmorrione.forgia.logic.parseNum
 import io.github.nmorrione.forgia.ui.AppViewModel
 import io.github.nmorrione.forgia.ui.components.H2
@@ -203,6 +204,28 @@ fun Stepper(label: String, value: Int, min: Int, max: Int, onChange: (Int) -> Un
         RoundIcon("−", enabled = value > min, size = 38.dp) { onChange(value - 1) }
         Text("$value", style = cond(22), textAlign = TextAlign.Center, modifier = Modifier.width(48.dp))
         RoundIcon("+", enabled = value < max, size = 38.dp) { onChange(value + 1) }
+    }
+}
+
+/** Come [Stepper], ma per una durata: mostra "3:00" e va a passi di [step] secondi. */
+@Composable
+fun TimeStepper(
+    label: String,
+    seconds: Int,
+    step: Int = 15,
+    min: Int = 0,
+    max: Int = 30 * 60,
+    help: String? = null,
+    onChange: (Int) -> Unit,
+) {
+    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f).padding(end = 8.dp)) {
+            Text(label, style = Body.copy(fontWeight = FontWeight.SemiBold))
+            help?.let { Text(it, style = Tiny, color = Pal.muted) }
+        }
+        RoundIcon("−", enabled = seconds > min, size = 38.dp) { onChange((seconds - step).coerceAtLeast(min)) }
+        Text(fmtClock(seconds * 1000L), style = cond(22), textAlign = TextAlign.Center, modifier = Modifier.width(64.dp))
+        RoundIcon("+", enabled = seconds < max, size = 38.dp) { onChange((seconds + step).coerceAtMost(max)) }
     }
 }
 

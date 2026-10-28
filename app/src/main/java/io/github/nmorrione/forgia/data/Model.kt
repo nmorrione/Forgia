@@ -108,8 +108,13 @@ data class Program(
     val measureWeekday: Int = 7,
     val info: List<TextSection> = emptyList(),
     val goal: Goal = Goal.BULK,
+    /** Recupero per cambiare esercizio, in secondi; ogni scheda può avere il suo. */
+    val changeRestSec: Int = 180,
 ) {
     fun session(id: String?): SessionType? = sessions.firstOrNull { it.id == id }
+
+    /** Il recupero tra un esercizio e l'altro della sessione: il suo, altrimenti quello del programma. */
+    fun changeRest(s: SessionType): Int = s.changeRestSec ?: changeRestSec
 }
 
 @Serializable
@@ -144,6 +149,8 @@ data class SessionType(
     val tips: List<Tip> = emptyList(),
     /** Note mostrate nella scheda quando la sessione non ha esercizi. */
     val planNotes: List<String> = emptyList(),
+    /** Recupero per cambiare esercizio solo per questa scheda; null = quello del programma. */
+    val changeRestSec: Int? = null,
 )
 
 @Serializable

@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import io.github.nmorrione.forgia.logic.Schedule
+import io.github.nmorrione.forgia.timer.fmtClock
 import io.github.nmorrione.forgia.ui.AppViewModel
 import io.github.nmorrione.forgia.ui.Tab
 import io.github.nmorrione.forgia.ui.Route
@@ -98,6 +99,9 @@ fun PlansScreen(vm: AppViewModel) {
                 Text(cur.name, style = cond(44, FontWeight.SemiBold, 0.95))
                 val days = s.weekdaysOf(cur.id).ifBlank { "Non è nella settimana tipo" }
                 Muted(listOf("$days.", cur.description, cur.duration).filter { it.isNotBlank() }.joinToString(" "), Modifier.padding(top = 6.dp), Body)
+                if (cur.exercises.size > 1) {
+                    Muted("Recupero per cambiare esercizio: ${fmtClock(prog.changeRest(cur) * 1000L)}.", Modifier.padding(top = 4.dp))
+                }
             }
             LinkBtn("Modifica la scheda") { vm.push(Route.SessionEdit(cur.id)) }
             if (cur.exercises.isNotEmpty()) {

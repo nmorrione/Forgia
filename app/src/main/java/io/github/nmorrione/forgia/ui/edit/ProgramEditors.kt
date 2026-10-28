@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import io.github.nmorrione.forgia.data.Exercise
 import io.github.nmorrione.forgia.data.Goal
 import io.github.nmorrione.forgia.logic.NextCycle
+import io.github.nmorrione.forgia.timer.fmtClock
 import io.github.nmorrione.forgia.data.Habit
 import io.github.nmorrione.forgia.data.Prescription
 import io.github.nmorrione.forgia.data.Program
@@ -230,8 +231,12 @@ fun ProgramEditor(vm: AppViewModel) {
         )
         TextIn("RIR dello scarico", prog.deload.rir, { v -> vm.updateProgram { it.copy(deload = it.deload.copy(rir = v)) } })
 
-        EditorSection("Riscaldamento")
+        EditorSection("Riscaldamento e recuperi")
         TextIn("Testo sopra gli esercizi", prog.warmup, { v -> vm.updateProgram { it.copy(warmup = v) } }, singleLine = false, minLines = 2)
+        TimeStepper(
+            "Cambio esercizio", prog.changeRestSec,
+            help = "Recupero tra un esercizio e il successivo, in Oggi. Ogni scheda può averne uno suo.",
+        ) { v -> vm.updateProgram { it.copy(changeRestSec = v) } }
 
         EditorSection("Abitudini da spuntare")
         prog.habits.forEachIndexed { i, h ->
@@ -284,6 +289,15 @@ fun SessionEditor(vm: AppViewModel, id: String) {
         TextIn("Sigla nel calendario", st.short, { v -> upd { it.copy(short = v.take(3)) } })
         TextIn("Descrizione", st.description, { v -> upd { it.copy(description = v) } }, singleLine = false)
         TextIn("Durata indicativa", st.duration, { v -> upd { it.copy(duration = v) } })
+        if (!st.rest) {
+            SwitchRow(
+                "Cambio esercizio diverso dal programma", st.changeRestSec != null,
+                help = "Il programma usa ${fmtClock(prog.changeRestSec * 1000L)} tra un esercizio e l’altro.",
+            ) { v -> upd { it.copy(changeRestSec = if (v) prog.changeRestSec else null) } }
+            st.changeRestSec?.let { sec ->
+                TimeStepper("Cambio esercizio in questa scheda", sec) { v -> upd { it.copy(changeRestSec = v) } }
+            }
+        }
         SwitchRow(
             "Giorno di riposo", st.rest,
             help = "Niente spunta «fatto», obiettivi alimentari da giorno di riposo.",

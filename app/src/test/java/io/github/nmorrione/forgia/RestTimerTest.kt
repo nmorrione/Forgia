@@ -35,6 +35,18 @@ class RestTimerTest {
         }
     }
 
+    @Test fun changeRestDefaultsToThreeMinutesAndCanBeOverridden() {
+        val p = Defaults.program(Defaults.ORIGINAL_START)
+        val ua = p.session("ua")!!
+        assertEquals(180, p.changeRest(ua))
+        assertEquals(90, p.changeRest(ua.copy(changeRestSec = 90)))
+        assertEquals(240, p.copy(changeRestSec = 240).changeRest(ua))
+        // Un file della 0.5.0 non ha il campo: si legge con 3 minuti
+        val obj = Json.parseToJsonElement(Store.encode(Defaults.appData(Defaults.ORIGINAL_START))).jsonObject
+        val program = JsonObject(obj.getValue("program").jsonObject.filterKeys { it != "changeRestSec" })
+        assertEquals(180, Store.decode(JsonObject(obj + ("program" to program)).toString()).program.changeRestSec)
+    }
+
     @Test fun timerSettingsFromVersion040GetTheBeeper() {
         // Un file della 0.4.0 non ha endSound: si legge con il cicalino
         val obj = Json.parseToJsonElement(Store.encode(Defaults.appData(Defaults.ORIGINAL_START))).jsonObject
